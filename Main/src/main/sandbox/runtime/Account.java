@@ -16,7 +16,7 @@ public class Account {
     final public sandbox.runtime.Resource bytecodes;
 
     final public Account parent;
-    final private long key;
+    final private Object key;
 
     private final static ThreadLocal<Account> current = new ThreadLocal<Account>(){
         public Account initialValue(){
@@ -30,7 +30,7 @@ public class Account {
         memory = new sandbox.runtime.Resource("Memory");
         bytecodes = new sandbox.runtime.Resource("Bytecodes");
         this.parent = null;
-        this.key = rng.nextLong();
+        this.key = new Object();
     }
 
     private Account(long maxMemory,
@@ -41,16 +41,16 @@ public class Account {
         bytecodes = parent.bytecodes.fork(maxBytecodes);
 
         this.parent = parent;
-        this.key = rng.nextLong();
+        this.key = new Object();
     }
 
-    public long pushMem(long subMaxMemory) throws Exception{
+    public Object pushMem(long subMaxMemory) throws Exception{
         return push(subMaxMemory, this.memory.max - this.memory.current);
     }
-    public long pushBytes(long subMaxBytecodes) throws Exception{
+    public Object pushBytes(long subMaxBytecodes) throws Exception{
         return push(this.bytecodes.max - this.bytecodes.current, subMaxBytecodes);
     }
-    public long push(long subMaxMemory, long subMaxBytecodes){
+    public Object push(long subMaxMemory, long subMaxBytecodes){
         System.out.println("Pushing " + this);
 
         Account newAccount = new Account(subMaxMemory, subMaxBytecodes, this);
@@ -61,7 +61,7 @@ public class Account {
     }
 
 
-    public void pop(long possibleKey) throws Exception{
+    public void pop(Object possibleKey) throws Exception{
         
         if (possibleKey == Account.get().key){
             System.out.println("Popping From " + this);
@@ -74,14 +74,9 @@ public class Account {
         }
     }
 
-    static boolean b = false;
-    public static Account get(){
-        if (b) return null;
-        else b = true;
-        Account A = current.get();
-        b = false;
-        return A;
 
+    public static Account get(){
+        return current.get();
     }
 
     public String toString(){

@@ -17,8 +17,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Transformer implements ClassFileTransformer {
     public static Set<Class<?>> transformMe = Collections.newSetFromMap(new ConcurrentHashMap<Class<?>,Boolean>());
 
+    /**
+     * Register the transformer with the Instrumentation object, just once,
+     * when the class is initially loaded.
+     */
     static {
-        agent.JavaAgent.instrumentation.addTransformer(new Transformer(), agent.JavaAgent.instrumentation.isRetransformClassesSupported());
+
+        agent.JavaAgent.instrumentation.addTransformer(
+            new Transformer(),
+            agent.JavaAgent.instrumentation.isRetransformClassesSupported()
+        );
     }
 
     private Transformer() {}
@@ -36,19 +44,16 @@ public class Transformer implements ClassFileTransformer {
          * red words to appear if they're not. Ideally we would figure out why.
          */
         if (className.startsWith("java/lang/ThreadLocal")) {
-            return null;
-        } else if (className.startsWith("java/lang/Class")) {
-            return null;
-        } else if (className.startsWith("java/lang/reflect/Array")) {
-            return null;
-        }else if (className.startsWith("sandbox/")){
-            return null;
+       // } else if (className.startsWith("java/lang/Class")) {
+       // } else if (className.startsWith("java/lang/reflect/Array")) {
+        } else if (className.startsWith("sandbox/")){
         } else  if (!transformMe.contains(cls)) {
-            System.out.println("Not Transforming!");
             return null;
         } else {
             return instrument(origBytes, loader);
         }
+        System.out.print("Skipped ");
+        return null;
     }
 
     /**

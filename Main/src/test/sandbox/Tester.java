@@ -23,13 +23,13 @@ public class Tester {
         MyClassLoader bcl = new MyClassLoader(new HashMap<String, byte[]>() {{
             put("HelloWorld", byteCode);
         }});
-        bcl.loadClass("sandbox.runtime.Recorder");
+        //bcl.loadClass("sandbox.runtime.Recorder");
 
 
         System.out.println("Executing Code...");
         System.out.println("============================================");
 
-        long key = Account.get().push(15000, 1000000);
+        Object key = Account.get().push(15000, 1000000);
 
 
 

@@ -18,13 +18,12 @@ class MethodAdapter extends MethodVisitor {
         "byte", "short", "int", "long"
     };
 
-
-
     private final String recorderClass = "sandbox/runtime/Recorder";
 
-
     private final String checkerMethod = "checkAllocation";
+
     private final String checkerSignature = "(I)V";
+
     private final String arrayCheckerSignature = "([I)V";
 
     /**
@@ -47,6 +46,8 @@ class MethodAdapter extends MethodVisitor {
      */
     @Override
     public void visitIntInsn(int opcode, int operand) {
+        //super.visitIntInsn(opcode, operand);
+
         if (opcode == Opcodes.NEWARRAY) {
             if (operand >= 4 && operand <= 11) {
                 // -> count
@@ -80,6 +81,8 @@ class MethodAdapter extends MethodVisitor {
      */
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String signature) {
+
+
         // java.lang.reflect.Array does its own native allocation.  Grr.
         if (opcode == Opcodes.INVOKESTATIC && owner.equals("java/lang/reflect/Array") && name.equals("newInstance")) {
             if (signature.equals("(Ljava/lang/Class;I)Ljava/lang/Object;")) {
@@ -87,12 +90,12 @@ class MethodAdapter extends MethodVisitor {
                 checkProposedLength();
                 // -> class count
                 super.visitMethodInsn(opcode, owner, name, signature);
+
                 return;
             } else if (signature.equals("(Ljava/lang/Class;[I)Ljava/lang/Object;")) {
                 // -> class dimsArray
                 super.visitInsn(Opcodes.DUP);
                 // -> class dimsArray dimsArray
-
                 super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, arrayCheckerSignature);
                 // -> class dimsArray
                 super.visitMethodInsn(opcode, owner, name, signature);
@@ -121,18 +124,10 @@ class MethodAdapter extends MethodVisitor {
             } else if ("newInstance".equals(name)) {
                 if ("java/lang/Class".equals(owner) && "()Ljava/lang/Object;".equals(signature)) {
                     // -> class
-                    super.visitIntInsn(Opcodes.BIPUSH, 1);
-                    // -> class 1
-                    super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, "checkAllocation", "(I)V");
-                    // -> class
                     super.visitMethodInsn(opcode, owner, name, signature);
                     // -> obj
                     return;
                 } else if ("java/lang/reflect/Constructor".equals(owner) && "([Ljava/lang/Object;)Ljava/lang/Object;".equals(signature)) {
-                    // -> class
-                    super.visitIntInsn(Opcodes.BIPUSH, 1);
-                    // -> class 1
-                    super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, checkerSignature);
                     // -> class
                     super.visitMethodInsn(opcode, owner, name, signature);
                     // -> obj
@@ -144,10 +139,6 @@ class MethodAdapter extends MethodVisitor {
         if (opcode == Opcodes.INVOKESPECIAL) {
             if ("clone".equals(name) && "java/lang/Object".equals(owner)) {
                 // -> class
-                super.visitIntInsn(Opcodes.BIPUSH, 1);
-                // -> class 1
-                super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, checkerSignature);
-                // -> class
                 super.visitMethodInsn(opcode, owner, name, signature);
                 // -> obj
                 return;
@@ -156,7 +147,6 @@ class MethodAdapter extends MethodVisitor {
 
         super.visitMethodInsn(opcode, owner, name, signature);
     }
-
 
     /**
      * new and anewarray bytecodes take a String operand for the type of
@@ -167,7 +157,9 @@ class MethodAdapter extends MethodVisitor {
      */
     @Override
     public void visitTypeInsn(int opcode, String typeName) {
+
         if (opcode == Opcodes.NEW) {
+
 
             super.visitTypeInsn(opcode, typeName);
 

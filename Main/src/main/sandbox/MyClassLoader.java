@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class MyClassLoader extends ClassLoader {
     Map<String, byte[]> specialClasses;
-    Set<String> whiteList = null;
+
 
     public MyClassLoader(Map<String, byte[]> specialClasses) {
         this.specialClasses = specialClasses;
@@ -19,13 +19,13 @@ public class MyClassLoader extends ClassLoader {
         try{
             //-javaagent:out/artifacts/Main_jar/Main.jar
             if(JavaAgent.instrumentation.isModifiableClass(in)){
-                System.out.println("Classload Instrumenting " + in.getName());
+                //System.out.println("Classload Instrumenting " + in.getName());
                 Transformer.transformMe.add(in);
                 JavaAgent.instrumentation.retransformClasses(in);
                 Transformer.transformMe.remove(in);
                 System.out.println("Instrumented " + in.getName());
             }else{
-                System.out.println("Classload Cannot Instrument" + in.getName());
+                System.out.println("Cannot Instrument" + in.getName());
             }
 
             return in;
@@ -35,8 +35,9 @@ public class MyClassLoader extends ClassLoader {
     public Class<?> loadClass(String name) throws ClassNotFoundException {
 
         if (specialClasses.containsKey(name)) return findClass(name);
-        else if (whiteList == null || whiteList.contains(name)) return instrument(super.loadClass(name));
-        else throw new ClassNotFoundException("Class " + name + " couldn't be loaded, sorry!");
+        else if (name.startsWith("sandbox")) return super.loadClass(name);
+        else return instrument(super.loadClass(name));
+
     }
 
     @Override

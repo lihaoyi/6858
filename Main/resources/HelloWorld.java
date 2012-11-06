@@ -21,12 +21,15 @@ public class HelloWorld {
 
 
         checkIncrement(1000);
+
         java.lang.reflect.Array.newInstance(Object.class, 10);
         checkIncrement(10);
         int[] dims = {1, 2, 3, 4, 5};
         checkIncrement(5);
         java.lang.reflect.Array.newInstance(Object.class, dims);
         checkIncrement(120);
+        a = new Object();
+
 
         return "Success! Nothing broke";
     }
@@ -35,7 +38,8 @@ public class HelloWorld {
     static {
         // Initialize all classes by forcing classloading
         a = new int[0];
-        a = Object.class;
+        a = new Object();
+        a = "" + "a";
         Array.newInstance(Object.class, 0);
     }
 
