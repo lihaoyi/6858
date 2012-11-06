@@ -6,23 +6,15 @@ import org.objectweb.asm.commons.LocalVariablesSorter;
 import org.objectweb.asm.tree.*;
 
 import static org.objectweb.asm.Opcodes.*;
+
 /**
- * A <code>MethodAdapter</code> that instruments all heap allocation bytecodes
- * to record the allocation being done for profiling.
- * Instruments bytecodes that allocate heap memory to call a recording hook.
- *
- * @author Ami Fischman
+ * In charge of instrumenting an individual method. Currently (imperfectly)
+ * instruments the sites of memory allocation in order to track and limit
+ * the number of allocations that can be done. Does a ton of bytecode mangling.
  */
 class MethodAdapter extends MethodVisitor {
-    public static final String CHECKER_SIGNATURE = "(I)V";
 
-    /**
-     * Like RECORDER_SIGNATURE, but for a method that extracts all of
-     * the information dynamically from a class.
-     */
-    public static final String CLASS_RECORDER_SIG = "(Ljava/lang/Class;Ljava/lang/Object;)V";
-
-        // Dictionary of primitive type opcode to English name.
+    // Dictionary of primitive type opcode to English name.
     private static final String[] primitiveTypeNames = {
         "INVALID0", "INVALID1", "INVALID2", "INVALID3",
         "boolean", "char", "float", "double",
@@ -35,8 +27,12 @@ class MethodAdapter extends MethodVisitor {
     private int outstandingAllocs = 0;
 
     private final String recorderClass = "sandbox/runtime/Recorder";
+
     private final String recorderMethod = "recordAllocation";
+    private final String CLASS_RECORDER_SIG = "(Ljava/lang/Class;Ljava/lang/Object;)V";
+
     private final String checkerMethod = "checkAllocation";
+    private final String CHECKER_SIGNATURE = "(I)V";
 
     /**
      * The LocalVariablesSorter used in this adapter.  Lame that it's public but
@@ -162,7 +158,7 @@ class MethodAdapter extends MethodVisitor {
         super.visitMethodInsn(opcode, owner, name, signature);
     }
 
-    // This is the cow that occurs when there is no static
+    // This is the instrumentation that occurs when there is no static
     // information about the class we are instantiating.  First we build the
     // object, then we get the class and invoke the recorder.
     private void buildRecorderFromObject(int opcode, String owner, String name, String signature) {

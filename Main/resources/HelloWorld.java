@@ -1,15 +1,13 @@
 import java.lang.Object;
 import java.lang.reflect.Array;
-
 import sandbox.runtime.Account;
+
+/**
+ * Basic test suite that allocates heap memory in a bunch of different
+ * ways and checks if the allocations are what we expect. Currently
+ * doesn't quite do the math properly.
+ */
 public class HelloWorld {
-    static Object a;
-    static {
-        // Initialize all classes by forcing classloading
-        a = new int[0];
-        a = Object.class;
-        Array.newInstance(Object.class, 0);
-    }
     public static String main(){
 
         // start actual accounting
@@ -33,8 +31,21 @@ public class HelloWorld {
         return "Success! Nothing broke";
     }
 
+    static Object a;
+    static {
+        // Initialize all classes by forcing classloading
+        a = new int[0];
+        a = Object.class;
+        Array.newInstance(Object.class, 0);
+    }
 
     static long runningTotal = 0;
+
+    /**
+     * Helper method which asserts whether the expected number of bytes
+     * of memory have been recorded as being allocated since the last time
+     * this method was called.
+     */
     private static void checkIncrement(int delta){
         long newTotal = Account.get().memory.current;
         long actualDelta = newTotal - runningTotal;

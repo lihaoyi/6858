@@ -7,12 +7,8 @@ import org.objectweb.asm.commons.LocalVariablesSorter;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
 
 /**
- * Instruments bytecodes that allocate heap memory to call a recording hook.
- * A <code>ClassAdapter</code> that processes methods with a
- * <code>MethodAdapter</code> to instrument heap allocations.
- *
- * @author jeremymanson@google.com (Jeremy Manson)
- * @author fischman@google.com (Ami Fischman) (Original Author)
+ * In charge of instrumenting an entire class. Does nothing but hand off the
+ * instrumenting of individual methods to MethodAdapter objects
  */
 class ClassAdapter extends org.objectweb.asm.ClassVisitor{
 
@@ -20,11 +16,6 @@ class ClassAdapter extends org.objectweb.asm.ClassVisitor{
         super(Opcodes.ASM4, cv);
     }
 
-    /**
-     * For each method in the class being instrumented, <code>visitMethod</code>
-     * is called and the returned MethodVisitor is used to visit the method.
-     * Note that a new MethodVisitor is constructed for each method.
-     */
     @Override
     public MethodVisitor visitMethod(int access, String base, String desc,
                                      String signature, String[] exceptions) {
