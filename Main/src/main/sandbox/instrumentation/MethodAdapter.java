@@ -3,9 +3,6 @@ package sandbox.instrumentation;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.LocalVariablesSorter;
-import org.objectweb.asm.tree.*;
-
-import static org.objectweb.asm.Opcodes.*;
 
 /**
  * In charge of instrumenting an individual method. Currently (imperfectly)
@@ -21,18 +18,14 @@ class MethodAdapter extends MethodVisitor {
         "byte", "short", "int", "long"
     };
 
-    // To track the difference between <init>'s called as the result of a NEW
-    // and <init>'s called because of superclass initialization, we track the
-    // number of NEWs that still need to have their <init>'s called.
-    private int outstandingAllocs = 0;
+
 
     private final String recorderClass = "sandbox/runtime/Recorder";
 
-    private final String recorderMethod = "recordAllocation";
-    private final String CLASS_RECORDER_SIG = "(Ljava/lang/Class;Ljava/lang/Object;)V";
 
     private final String checkerMethod = "checkAllocation";
-    private final String CHECKER_SIGNATURE = "(I)V";
+    private final String checkerSignature = "(I)V";
+    private final String arrayCheckerSignature = "([I)V";
 
     /**
      * The LocalVariablesSorter used in this adapter.  Lame that it's public but
@@ -99,7 +92,8 @@ class MethodAdapter extends MethodVisitor {
                 // -> class dimsArray
                 super.visitInsn(Opcodes.DUP);
                 // -> class dimsArray dimsArray
-                super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, "checkAllocation", "([I)V");
+
+                super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, arrayCheckerSignature);
                 // -> class dimsArray
                 super.visitMethodInsn(opcode, owner, name, signature);
                 // -> newobj
@@ -126,17 +120,22 @@ class MethodAdapter extends MethodVisitor {
                 return;
             } else if ("newInstance".equals(name)) {
                 if ("java/lang/Class".equals(owner) && "()Ljava/lang/Object;".equals(signature)) {
-                    super.visitInsn(Opcodes.DUP);
-                    // -> Class Class
+                    // -> class
+                    super.visitIntInsn(Opcodes.BIPUSH, 1);
+                    // -> class 1
+                    super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, "checkAllocation", "(I)V");
+                    // -> class
                     super.visitMethodInsn(opcode, owner, name, signature);
-                    // -> Class newobj
-                    super.visitInsn(Opcodes.DUP_X1);
-                    // -> newobj Class newobj
-                    super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, recorderMethod, CLASS_RECORDER_SIG);
-                    // -> newobj
+                    // -> obj
                     return;
                 } else if ("java/lang/reflect/Constructor".equals(owner) && "([Ljava/lang/Object;)Ljava/lang/Object;".equals(signature)) {
-                    buildRecorderFromObject(opcode, owner, name, signature);
+                    // -> class
+                    super.visitIntInsn(Opcodes.BIPUSH, 1);
+                    // -> class 1
+                    super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, checkerSignature);
+                    // -> class
+                    super.visitMethodInsn(opcode, owner, name, signature);
+                    // -> obj
                     return;
                 }
             }
@@ -144,49 +143,20 @@ class MethodAdapter extends MethodVisitor {
 
         if (opcode == Opcodes.INVOKESPECIAL) {
             if ("clone".equals(name) && "java/lang/Object".equals(owner)) {
-                buildRecorderFromObject(opcode, owner, name, signature);
+                // -> class
+                super.visitIntInsn(Opcodes.BIPUSH, 1);
+                // -> class 1
+                super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, checkerSignature);
+                // -> class
+                super.visitMethodInsn(opcode, owner, name, signature);
+                // -> obj
                 return;
-            } else if ("<init>".equals(name) && outstandingAllocs > 0) {
-                // Tricky because superclass initializers mean there can be more calls
-                // to <init> than calls to NEW; hence outstandingAllocs.
-                --outstandingAllocs;
-
-
             }
         }
 
         super.visitMethodInsn(opcode, owner, name, signature);
     }
 
-    // This is the instrumentation that occurs when there is no static
-    // information about the class we are instantiating.  First we build the
-    // object, then we get the class and invoke the recorder.
-    private void buildRecorderFromObject(int opcode, String owner, String name, String signature) {
-        super.visitMethodInsn(opcode, owner, name, signature);
-        // -> newobj
-        super.visitInsn(Opcodes.DUP);
-        // -> newobj newobj
-        super.visitInsn(Opcodes.DUP);
-        // -> newobj newobj newobj
-        // We could be instantiating this class or a subclass, so we
-        // have to get the class the hard way.
-        super.visitMethodInsn(
-            Opcodes.INVOKEVIRTUAL,
-            "java/lang/Object",
-            "getClass",
-            "()Ljava/lang/Class;"
-        );
-        // -> newobj newobj Class
-        super.visitInsn(Opcodes.SWAP);
-        // -> newobj Class newobj
-        super.visitMethodInsn(
-            Opcodes.INVOKESTATIC,
-            recorderClass,
-            recorderMethod,
-            CLASS_RECORDER_SIG
-        );
-        // -> newobj
-    }
 
     /**
      * new and anewarray bytecodes take a String operand for the type of
@@ -199,12 +169,8 @@ class MethodAdapter extends MethodVisitor {
     public void visitTypeInsn(int opcode, String typeName) {
         if (opcode == Opcodes.NEW) {
 
-            // We can't actually tag this object right after allocation because it
-            // must be initialized with a ctor before we can touch it (Verifier
-            // enforces this).  Instead, we just note it and tag following
-            // initialization.
             super.visitTypeInsn(opcode, typeName);
-            ++outstandingAllocs;
+
         } else if (opcode == Opcodes.ANEWARRAY) {
             // ... len
             checkProposedLength();
@@ -232,7 +198,7 @@ class MethodAdapter extends MethodVisitor {
         // -> dim
         super.visitInsn(Opcodes.DUP);
         // -> dim dim
-        super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, CHECKER_SIGNATURE);
+        super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, checkerSignature);
         // -> dim
     }
 
@@ -262,7 +228,7 @@ class MethodAdapter extends MethodVisitor {
         // -> arrayRef
         super.visitInsn(Opcodes.DUP);
         // -> arrayRef arrayRef
-        super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, "checkAllocation", "([I)V");
+        super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, arrayCheckerSignature);
         // -> arrayRef
 
         for(int i = 0; i < dimCount; i++){
