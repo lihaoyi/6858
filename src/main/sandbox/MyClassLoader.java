@@ -1,11 +1,9 @@
 package sandbox;
 
-import agent.JavaAgent;
+import sandbox.agent.JavaAgent;
 import sandbox.instrumentation.Transformer;
-import sandbox.runtime.Recorder;
 
 import java.util.Map;
-import java.util.Set;
 
 public class MyClassLoader extends ClassLoader {
     Map<String, byte[]> specialClasses;

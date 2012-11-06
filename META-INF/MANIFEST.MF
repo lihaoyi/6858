@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Boot-Class-Path: ./JSandbox.jar ./asm-all-4.0.jar ./commons-io-2.1.jar
+Premain-Class: sandbox.agent.JavaAgent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+Main-Class: NotSuitableAsMain

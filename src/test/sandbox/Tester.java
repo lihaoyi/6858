@@ -14,7 +14,7 @@ public class Tester {
     public static void main(String[] args) throws Exception {
 
         System.out.println("Loading Source...");
-        final String sourceCode = loadFile("Main/resources/HelloWorld.java");
+        final String sourceCode = loadFile("resources/HelloWorld.java");
 
         System.out.println("Compiling...");
         final byte[] byteCode = Compiler.compile("HelloWorld", sourceCode);
@@ -31,10 +31,7 @@ public class Tester {
 
         Object key = Account.get().push(15000, 1000000);
 
-
-
         String result = (String) bcl.loadClass("HelloWorld").getMethod("main").invoke(null);
-
 
         Account.get().pop(key);
         System.out.println("============================================");

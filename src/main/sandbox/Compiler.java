@@ -26,7 +26,6 @@ public class Compiler {
         compiler.getTask(null, fileManager, null, null, null, jfiles).call();
 
         return fileManager.getBytes();
-
     }
 
     private static class CharSequenceJavaFileObject extends SimpleJavaFileObject {

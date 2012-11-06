@@ -23,9 +23,9 @@ public class Transformer implements ClassFileTransformer {
      */
     static {
 
-        agent.JavaAgent.instrumentation.addTransformer(
+        sandbox.agent.JavaAgent.instrumentation.addTransformer(
             new Transformer(),
-            agent.JavaAgent.instrumentation.isRetransformClassesSupported()
+            sandbox.agent.JavaAgent.instrumentation.isRetransformClassesSupported()
         );
     }
 
@@ -43,17 +43,12 @@ public class Transformer implements ClassFileTransformer {
          * Not sure why all these guys need to be skipped, but they cause
          * red words to appear if they're not. Ideally we would figure out why.
          */
-        if (className.startsWith("java/lang/ThreadLocal")) {
-       // } else if (className.startsWith("java/lang/Class")) {
-       // } else if (className.startsWith("java/lang/reflect/Array")) {
-        } else if (className.startsWith("sandbox/")){
-        } else  if (!transformMe.contains(cls)) {
+        if (!transformMe.contains(cls)) {
             return null;
         } else {
             return instrument(origBytes, loader);
         }
-        System.out.print("Skipped ");
-        return null;
+
     }
 
     /**
