@@ -5,8 +5,8 @@ import java.lang.instrument.Instrumentation;
 
 /**
  * Stub class to be used as the -javaagent. Does nothing except providing
- * a premain() to be called, immediately passing the provided sandbox.instrumentation
- * object to Transformer
+ * a premain() to be called, and simply stores the Instrumentation object it
+ * is passed for someone else to use later
  */
 public class JavaAgent {
     public static Instrumentation instrumentation;
