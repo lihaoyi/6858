@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Boot-Class-Path: ./Agent.jar
-Premain-Class: agent.JavaAgent
-Can-Redefine-Classes: true
-Can-Retransform-Classes: true
-Main-Class: NotSuitableAsMain
