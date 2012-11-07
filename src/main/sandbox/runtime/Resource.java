@@ -29,15 +29,15 @@ public class Resource {
             );
         }
     }
-    public void increment(int[] deltas){
+    public void increment(int[] counts, int size){
         long product = 1;
-        for(int i = 0; i < deltas.length; i++){
-            if (deltas[i] > Long.MAX_VALUE / product) {
+        for(int i = 0; i < counts.length; i++){
+            if (counts[i] > Long.MAX_VALUE / product) {
                 throw new sandbox.runtime.ResourceLimitException("Trying to allocate more than 2^63 bytes of memory");
             }
-            product = product * deltas[i];
+            product = product * counts[i];
         }
-        increment(product);
+        increment(product * size);
     }
     public void increment(long delta){
         checkIncrement(delta);

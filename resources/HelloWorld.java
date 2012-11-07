@@ -15,19 +15,18 @@ public class HelloWorld {
 
         checkIncrement(0);
         a = new int[10];
-        checkIncrement(10);
+        checkIncrement(10 * 4);
 
         a = new int[10][10][10];
 
-
-        checkIncrement(1000);
+        checkIncrement(1000 * 4);
 
         java.lang.reflect.Array.newInstance(Object.class, 10);
-        checkIncrement(10);
+        checkIncrement(10 * 8); // NOTE(TFK): Assume sizeof(T_REF) = 8
         int[] dims = {1, 2, 3, 4, 5};
-        checkIncrement(5);
+        checkIncrement(5 * 4);
         java.lang.reflect.Array.newInstance(Object.class, dims);
-        checkIncrement(120);
+        checkIncrement(120 * 8);
         a = new Object();
 
 
@@ -54,6 +53,11 @@ public class HelloWorld {
         long newTotal = Account.get().memory.current;
         long actualDelta = newTotal - runningTotal;
         assert actualDelta == delta: "memory incremented by " + actualDelta +" expected " + delta;
+        // NOTE(TFK): The above assertion was not failing correctly so
+        // I added this print statement to debug.
+        if (delta != actualDelta) {
+          System.out.println("Incorrect quota delta. Actual: "+actualDelta + " Expected: "+ delta);
+        }
         runningTotal = newTotal;
     }
 }

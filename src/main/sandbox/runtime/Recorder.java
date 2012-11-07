@@ -9,17 +9,21 @@ public class Recorder {
 
     volatile static boolean disabled = false;
 
-    public static void checkAllocation(int count){
+    // Checks whether we can allocate count elements of size bytes.
+    public static void checkAllocation(int count, int size){
         if (!disabled) disabled = true;
         else return;
-        sandbox.runtime.Account.get().memory.increment(count);
+        // Print statements for debugging.
+        // System.out.println("Printing the count:" + count);
+        // System.out.println("Printing the type:" + type);
+        sandbox.runtime.Account.get().memory.increment(count * size);
         disabled = false;
     }
 
-    public static void checkAllocation(int[] counts){
+    public static void checkAllocation(int[] counts, int size){
         if (!disabled) disabled = true;
         else return;
-        sandbox.runtime.Account.get().memory.increment(counts);
+        sandbox.runtime.Account.get().memory.increment(counts, size);
         disabled = false;
     }
 }

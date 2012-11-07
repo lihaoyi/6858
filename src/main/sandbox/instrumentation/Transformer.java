@@ -71,7 +71,7 @@ public class Transformer implements ClassFileTransformer {
 
             cr.accept(adapter, ClassReader.SKIP_FRAMES);
             return cw.toByteArray();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             System.out.println("Failed to instrument class: " + e);
             e.printStackTrace();
             throw e;

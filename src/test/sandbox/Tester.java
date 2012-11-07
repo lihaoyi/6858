@@ -29,7 +29,7 @@ public class Tester {
         System.out.println("Executing Code...");
         System.out.println("============================================");
 
-        Object key = Account.get().push(15000, 1000000);
+        Object key = Account.get().push(20000, 1000000);
 
         String result = (String) bcl.loadClass("HelloWorld").getMethod("main").invoke(null);
 
