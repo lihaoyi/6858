@@ -9,7 +9,7 @@ import org.objectweb.asm.commons.LocalVariablesSorter;
  * instruments the sites of memory allocation in order to track and limit
  * the number of allocations that can be done. Does a ton of bytecode mangling.
  */
-class MemoryMethodAdapter extends MethodVisitor {
+public class MemoryMethodAdapter extends MethodVisitor {
 
     // Dictionary of primitive type opcode to English name.
     private static final String[] primitiveTypeNames = {
