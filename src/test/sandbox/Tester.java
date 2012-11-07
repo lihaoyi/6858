@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 
 public class Tester {
@@ -24,19 +25,26 @@ public class Tester {
         MyClassLoader bcl = new MyClassLoader(new HashMap<String, byte[]>() {{
             put("HelloWorld", byteCode);
         }});
+
         //bcl.loadClass("sandbox.runtime.Recorder");
 
 
         System.out.println("Executing Code...");
         System.out.println("============================================");
 
-        Object key = Account.get().push(15000, 1000000);
+        //Object key = Account.get().push(15000, 1000000);
 
-        String result = (String) bcl.loadClass("HelloWorld").getMethod("main").invoke(null);
+        Class c = bcl.loadClass("HelloWorld");
 
-        Account.get().pop(key);
-        System.out.println("============================================");
+        Method m = c.getMethod("main");
+
+
+        String result = (String) m.invoke(null);
         System.out.println("RESULT: " + result);
+
+        //Account.get().pop(key);
+        System.out.println("============================================");
+        //
 
     }
 

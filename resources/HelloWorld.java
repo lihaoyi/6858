@@ -30,8 +30,8 @@ public class HelloWorld {
         checkIncrement(120);
         a = new Object();
 
-
-        return "Success! Nothing broke";
+        if (output == null) return "Success! Nothing broke";
+        else return output;
     }
 
     static Object a;
@@ -44,7 +44,7 @@ public class HelloWorld {
     }
 
     static long runningTotal = 0;
-
+    static String output = null;
     /**
      * Helper method which asserts whether the expected number of bytes
      * of memory have been recorded as being allocated since the last time
@@ -53,7 +53,7 @@ public class HelloWorld {
     private static void checkIncrement(int delta){
         long newTotal = Account.get().memory.current;
         long actualDelta = newTotal - runningTotal;
-        assert actualDelta == delta: "memory incremented by " + actualDelta +" expected " + delta;
+        if (actualDelta != delta) output = "memory incremented by " + actualDelta +" expected " + delta;
         runningTotal = newTotal;
     }
 }

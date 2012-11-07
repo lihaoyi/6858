@@ -18,13 +18,12 @@ public class Account {
     final public Account parent;
     final private Object key;
 
-    private final static ThreadLocal<Account> current = new ThreadLocal<Account>(){
-        public Account initialValue(){
-            return new Account();
-        }
+    private final static ThreadLocal<Account> current = new ThreadLocal<Account>();
+    static {
+        current.set(new Account());
     };
 
-    private static final Random rng = new Random();
+
 
     private Account(){
         memory = new sandbox.runtime.Resource("Memory");

@@ -64,18 +64,18 @@ public class Transformer implements ClassFileTransformer {
         try {
 
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-
             ClassAdapter adapter = new ClassAdapter(cw);
-
             ClassReader cr = new ClassReader(originalBytes);
-
             cr.accept(adapter, ClassReader.SKIP_FRAMES);
-            return cw.toByteArray();
+
+            byte[] output = cw.toByteArray();
+
+            return output;
         } catch (Exception e) {
             System.out.println("Failed to instrument class: " + e);
             e.printStackTrace();
             throw e;
-        } catch (Error e) {
+        } catch (StackOverflowError e) {
             System.out.println("Failed to instrument class: " + e);
             e.printStackTrace();
             throw e;

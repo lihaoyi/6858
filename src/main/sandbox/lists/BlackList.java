@@ -1,4 +1,4 @@
-package sandbox.classloader;
+package sandbox.lists;
 
 
 public class BlackList {
@@ -12,11 +12,11 @@ public class BlackList {
     }
 
     private static final String[] blacklistclasses = {
-            "java.lang.System",
+          /*  "java.lang.System",
             "java.lang.Runtime",
             "java.io.File",
             "java.net",
             "java.rmi",
-            "java.security",
+            "java.security",*/
     };
 }

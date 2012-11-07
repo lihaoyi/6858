@@ -3,8 +3,7 @@
 package sandbox.instrumentation;
 
 import org.objectweb.asm.*;
-import org.objectweb.asm.commons.LocalVariablesSorter;
-import org.objectweb.asm.commons.JSRInlinerAdapter;
+import sandbox.lists.NativeWhiteList;
 
 /**
  * In charge of instrumenting an entire class. Does nothing but hand off the
@@ -16,13 +15,38 @@ class ClassAdapter extends org.objectweb.asm.ClassVisitor{
         super(Opcodes.ASM4, cv);
     }
 
+    String name;
     @Override
-    public MethodVisitor visitMethod(int access, String base, String desc,
-                                     String signature, String[] exceptions) {
-        MethodVisitor mv = cv.visitMethod(access, base, desc, signature, exceptions);
-        JSRInlinerAdapter jsria = new JSRInlinerAdapter(mv, access, base, desc, signature, exceptions);
+    public void visit(
+            int version,
+            int access,
+            String name,
+            String signature,
+            String superName,
+            String[] interfaces){
 
-        MemoryMethodAdapter mma = new MemoryMethodAdapter(jsria);
+        this.name = name;
+        cv.visit(version, access, name, signature, superName, interfaces);
+
+    }
+    @Override
+    public MethodVisitor visitMethod(int access,
+                                     String base,
+                                     String desc,
+                                     String signature,
+                                     String[] exceptions) {
+
+        // remove the `native` modifier on a method if it is not on the
+        // whitelist for native methods
+        MethodVisitor mv = cv.visitMethod(
+                NativeWhiteList.allowed(name, base) ? access : access & ~Opcodes.ACC_NATIVE,
+                base,
+                desc,
+                signature,
+                exceptions
+        );
+
+        MemoryMethodAdapter mma = new MemoryMethodAdapter(mv);
         BanNativesMethodAdapter bnma = new BanNativesMethodAdapter(mma);
         BytecodeMethodAdapter bma = new BytecodeMethodAdapter(bnma);
         return bma;
