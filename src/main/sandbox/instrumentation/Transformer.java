@@ -22,7 +22,6 @@ public class Transformer implements ClassFileTransformer {
      * when the class is initially loaded.
      */
     static {
-
         sandbox.agent.JavaAgent.instrumentation.addTransformer(
             new Transformer(),
             sandbox.agent.JavaAgent.instrumentation.isRetransformClassesSupported()
@@ -48,7 +47,6 @@ public class Transformer implements ClassFileTransformer {
         } else {
             return instrument(origBytes, loader);
         }
-
     }
 
     /**

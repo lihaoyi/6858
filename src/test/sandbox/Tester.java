@@ -26,23 +26,18 @@ public class Tester {
             put("HelloWorld", byteCode);
         }});
 
-        //bcl.loadClass("sandbox.runtime.Recorder");
-
-
         System.out.println("Executing Code...");
         System.out.println("============================================");
 
-        //Object key = Account.get().push(15000, 1000000);
+        Object key = Account.get().push(15000, 1000000);
 
         Class c = bcl.loadClass("HelloWorld");
 
         Method m = c.getMethod("main");
-
-
         String result = (String) m.invoke(null);
         System.out.println("RESULT: " + result);
 
-        //Account.get().pop(key);
+        Account.get().pop(key);
         System.out.println("============================================");
         //
 

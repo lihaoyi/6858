@@ -18,17 +18,16 @@ public class HelloWorld {
         checkIncrement(10);
 
         a = new int[10][10][10];
-
-
         checkIncrement(1000);
 
         java.lang.reflect.Array.newInstance(Object.class, 10);
         checkIncrement(10);
+
         int[] dims = {1, 2, 3, 4, 5};
         checkIncrement(5);
+
         java.lang.reflect.Array.newInstance(Object.class, dims);
         checkIncrement(120);
-        a = new Object();
 
         if (output == null) return "Success! Nothing broke";
         else return output;

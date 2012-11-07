@@ -46,7 +46,6 @@ public class MemoryMethodAdapter extends MethodVisitor {
      */
     @Override
     public void visitIntInsn(int opcode, int operand) {
-        //super.visitIntInsn(opcode, operand);
 
         if (opcode == Opcodes.NEWARRAY) {
             if (operand >= 4 && operand <= 11) {
