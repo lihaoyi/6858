@@ -1,13 +1,15 @@
-package sandbox;
+package sandbox.classloader;
 
 import sandbox.agent.JavaAgent;
 import sandbox.instrumentation.Transformer;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class MyClassLoader extends ClassLoader {
     Map<String, byte[]> specialClasses;
-
 
     public MyClassLoader(Map<String, byte[]> specialClasses) {
         this.specialClasses = specialClasses;
@@ -33,6 +35,7 @@ public class MyClassLoader extends ClassLoader {
     public Class<?> loadClass(String name) throws ClassNotFoundException {
 
         if (specialClasses.containsKey(name)) return findClass(name);
+        else if (!BlackList.allow(name)) throw new ClassNotFoundException("Cannot load blacklisted class: " + name);
         else if (name.startsWith("sandbox")) return super.loadClass(name);
         else return instrument(super.loadClass(name));
 
