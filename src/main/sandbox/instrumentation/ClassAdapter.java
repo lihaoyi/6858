@@ -3,8 +3,6 @@
 package sandbox.instrumentation;
 
 import org.objectweb.asm.*;
-import org.objectweb.asm.commons.JSRInlinerAdapter;
-import org.objectweb.asm.commons.LocalVariablesSorter;
 import sandbox.lists.NativeWhiteList;
 
 /**
@@ -38,7 +36,7 @@ class ClassAdapter extends org.objectweb.asm.ClassVisitor{
                                      String signature,
                                      String[] exceptions) {
 
-        boolean isNative = false;//(access & Opcodes.ACC_NATIVE) != 0;
+        boolean isNative = false && (access & Opcodes.ACC_NATIVE) != 0;
         boolean rewrite = isNative && !NativeWhiteList.allowed(name, base);
         // remove the `native` modifier on a method if it is not on the
         // whitelist for native methods
@@ -49,6 +47,7 @@ class ClassAdapter extends org.objectweb.asm.ClassVisitor{
                 signature,
                 exceptions
         );
+
         if(isNative && rewrite){
             // if this is a native method we want to rewrite, do something
             // about it toString() turn it into a safe, non-native method
@@ -60,12 +59,7 @@ class ClassAdapter extends org.objectweb.asm.ClassVisitor{
         }else{
             // if this is a java method, then do all the instrumentation
             // magic
-            return new BytecodeMethodAdapter(
-                    new MemoryMethodAdapter(
-                            new JSRInlinerAdapter(mv, access, base, desc, signature, exceptions)
-                    )
-            );
-
+            return new BytecodeMethodAdapter(new MemoryMethodAdapter(mv));
         }
     }
 }
