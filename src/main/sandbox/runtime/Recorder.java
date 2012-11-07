@@ -22,8 +22,4 @@ public class Recorder {
         sandbox.runtime.Account.get().memory.increment(counts);
         disabled = false;
     }
-    public static void fail(){
-        total = total + 1;
-    }
-    public static int total = 0;
 }
