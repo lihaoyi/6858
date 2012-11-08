@@ -1,7 +1,6 @@
 package sandbox.runtime;
 
 import sandbox.instrumentation.BanNativesMethodAdapter;
-import sandbox.instrumentation.Transformer;
 
 /**
  * Runtime target for the instrumented bytecode to hit, by providing two
@@ -12,26 +11,27 @@ public class Recorder {
 
     volatile static boolean disabled = false;
 
-    public static void checkAllocation(int count){
+    // Checks whether we can allocate count elements of size bytes.
+    public static void checkAllocation(int count, int size){
         if (!disabled) disabled = true;
         else return;
-        Account.get().memory.increment(count);
+        // Print statements for debugging.
+        // System.out.println("Printing the count:" + count);
+        // System.out.println("Printing the type:" + type);
+        sandbox.runtime.Account.get().memory.increment(count * size);
         disabled = false;
     }
 
-    public static void checkAllocation(int[] counts){
+    public static void checkAllocation(int[] counts, int size){
         if (!disabled) disabled = true;
         else return;
-        Account.get().memory.increment(counts);
+        sandbox.runtime.Account.get().memory.increment(counts, size);
         disabled = false;
     }
-
     public static void checkNative(short id){
         if (!disabled) disabled = true;
         else return;
-
-        if (!Account.get().nativeWhitelist.allowed(id)){
-
+        if(!Account.get().nativeWhitelist.allowed(id)){
             throw new BannedNativeException(BanNativesMethodAdapter.cache.get(id));
         }
         disabled = false;

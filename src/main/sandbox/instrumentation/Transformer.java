@@ -70,7 +70,7 @@ public class Transformer implements ClassFileTransformer {
             byte[] output = cw.toByteArray();
 
             return output;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             System.out.println("Failed to instrument class: " + e);
             e.printStackTrace();
             throw e;

@@ -1,5 +1,7 @@
 import java.lang.Object;
 import java.lang.reflect.Array;
+
+import com.sun.servicetag.SystemEnvironment;
 import sandbox.runtime.Account;
 
 /**
@@ -15,19 +17,19 @@ public class HelloWorld {
 
         checkIncrement(0);
         a = new int[10];
-        checkIncrement(10);
+        checkIncrement(10 * 4);
 
         a = new int[10][10][10];
-        checkIncrement(1000);
+        checkIncrement(1000 * 4);
 
         java.lang.reflect.Array.newInstance(Object.class, 10);
-        checkIncrement(10);
+        checkIncrement(10 * 8); // sizeof(T_REF) is 8 for now.
 
         int[] dims = {1, 2, 3, 4, 5};
-        checkIncrement(5);
+        checkIncrement(5 * 4);
 
         java.lang.reflect.Array.newInstance(Object.class, dims);
-        checkIncrement(120);
+        checkIncrement(120 * 8); // sizeof(T_REF) is 8 for now.
 
         if (output == null) return "Success! Nothing broke";
         else return output;

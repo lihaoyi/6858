@@ -49,7 +49,7 @@ public class BanNativesMethodAdapter extends MethodVisitor {
                 }
             }
 
-        }catch(ClassNotFoundException e){
+        }catch(Throwable e){
             System.out.println("B " + e);
         }
 

@@ -22,9 +22,9 @@ public class MemoryMethodAdapter extends MethodVisitor {
 
     private final String checkerMethod = "checkAllocation";
 
-    private final String checkerSignature = "(I)V";
+    private final String checkerSignature = "(II)V";
 
-    private final String arrayCheckerSignature = "([I)V";
+    private final String arrayCheckerSignature = "([II)V";
 
     /**
      * The LocalVariablesSorter used in this adapter.  Lame that it's public but
@@ -50,7 +50,7 @@ public class MemoryMethodAdapter extends MethodVisitor {
         if (opcode == Opcodes.NEWARRAY) {
             if (operand >= 4 && operand <= 11) {
                 // -> count
-                checkProposedLength();
+                checkProposedLength(operand);
                 // -> count
                 super.visitIntInsn(opcode, operand);
                 // -> aref
@@ -80,13 +80,11 @@ public class MemoryMethodAdapter extends MethodVisitor {
      */
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String signature) {
-
-
         // java.lang.reflect.Array does its own native allocation.  Grr.
         if (opcode == Opcodes.INVOKESTATIC && owner.equals("java/lang/reflect/Array") && name.equals("newInstance")) {
             if (signature.equals("(Ljava/lang/Class;I)Ljava/lang/Object;")) {
                 // -> class count
-                checkProposedLength();
+                checkProposedLength(-1);
                 // -> class count
                 super.visitMethodInsn(opcode, owner, name, signature);
 
@@ -95,6 +93,9 @@ public class MemoryMethodAdapter extends MethodVisitor {
                 // -> class dimsArray
                 super.visitInsn(Opcodes.DUP);
                 // -> class dimsArray dimsArray
+                // TODO(TFK): Would be nice to move this logic elsewhere.
+                super.visitIntInsn(Opcodes.SIPUSH, sizeofAtype(-1));
+                // -> class dimsArray dimsArray sizeof(REF_T)
                 super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, arrayCheckerSignature);
                 // -> class dimsArray
                 super.visitMethodInsn(opcode, owner, name, signature);
@@ -113,7 +114,7 @@ public class MemoryMethodAdapter extends MethodVisitor {
                 // -> obj arrayref
                 super.visitInsn(Opcodes.ARRAYLENGTH);
                 // -> obj length
-                checkProposedLength();
+                checkProposedLength(-1);
                 // -> obj length
                 super.visitInsn(Opcodes.POP);
                 // -> obj
@@ -158,13 +159,10 @@ public class MemoryMethodAdapter extends MethodVisitor {
     public void visitTypeInsn(int opcode, String typeName) {
 
         if (opcode == Opcodes.NEW) {
-
-
             super.visitTypeInsn(opcode, typeName);
-
         } else if (opcode == Opcodes.ANEWARRAY) {
             // ... len
-            checkProposedLength();
+            checkProposedLength(typeNameToInt(typeName));
             // ... len
             super.visitTypeInsn(opcode, typeName);
             // ... arrayRef
@@ -176,19 +174,100 @@ public class MemoryMethodAdapter extends MethodVisitor {
     @Override
     public void visitMultiANewArrayInsn(String typeName, int dimCount) {
         // -> dim1 dim2 dim3 ... dimN
-        checkProposedMultiDims(dimCount);
+        checkProposedMultiDims(dimCount, typeNameToInt(typeName));
         // -> dim1 dim2 dim3 ... dimN
         super.visitMultiANewArrayInsn(typeName, dimCount);
         // -> arrayRef
     }
 
+
+    /**
+     * Returns atype for primitive of a multi-dim array, given its typeName
+     * 
+     * This method is currently just a hack.
+     */
+    private int typeNameToInt(String typeName) {
+      // This method is a bit of a hack.
+      char[] typeNameChars = typeName.toCharArray();
+      int i;
+      for (i = 0; i < typeNameChars.length; i++) {
+        if (typeNameChars[i] != '[') {
+          break;
+        }
+      }
+      if (i != typeNameChars.length - 1) {
+        return -1;
+      }
+      switch (typeNameChars[i]) {
+        case 'Z':
+          return 4; // T_BOOLEAN
+        case 'C':
+          return 5; // T_CHAR
+        case 'F':
+          return 6; // T_FLOAT
+        case 'D':
+          return 7; // T_DOUBLE
+        case 'B':
+          return 8; // T_BYTE
+        case 'S':
+          return 9; // T_SHORT
+        case 'I':
+          return 10; // T_INT
+        case 'J':
+          return 11; // T_LONG
+        default:
+          return -1; // T_REF
+      }
+    }
+
+    /**
+     * Returns the size in bytes of an atype operand.
+     * 
+     * The atype operand of each newarray instruction must take one of the
+     * values: T_BOOLEAN (4), T_CHAR (5), T_FLOAT (6), T_DOUBLE (7),
+     * T_BYTE (8), T_SHORT (9), T_INT (10), or T_LONG (11).
+     *
+     * NOTE(TFK): This method uses a magic operand for object references T_REF (-1).
+     */
+    private int sizeofAtype(int operand) {
+      switch (operand) {
+        case 4:
+          return 1; // T_BOOLEAN: 1 byte.
+        case 5:
+          return 2; // T_CHAR: 2 bytes.
+        case 6:
+          return 4; // T_FLOAT: 4 bytes.
+        case 7:
+          return 8; // T_DOUBLE: 8 bytes.
+        case 8:
+          return 1; // T_BYTE: 1 byte.
+        case 9:
+          return 2; // T_SHORT: 2 bytes.
+        case 10: 
+          return 4; // T_INT: 4 bytes.
+        case 11:
+          return 8; // T_LONG: 8 bytes.
+        case -1:
+          // TODO(TFK): Object reference size probably depends on
+          // JVM. Lets play it safe and have them be 8 bytes.
+          return 8; // T_REF: 8 bytes.
+        default:
+	  System.out.println(
+              "sizeofAtype called with an invalid atype operand " +
+               operand + ".  Assuming the type size is 1!");
+          return 1;
+      } 
+    }
+
     /**
      * Checks that the dim at the top of the stack is not too large
      */
-    private void checkProposedLength(){
+    private void checkProposedLength(int operand){
         // -> dim
         super.visitInsn(Opcodes.DUP);
         // -> dim dim
+        super.visitIntInsn(Opcodes.SIPUSH, sizeofAtype(operand));
+        // -> dim dim sizeof(operand)
         super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, checkerSignature);
         // -> dim
     }
@@ -197,7 +276,7 @@ public class MemoryMethodAdapter extends MethodVisitor {
      * Takes a bunch of dimensions at the top of the stack and checks that
      * their total size isn't too large
      */
-    private void checkProposedMultiDims(int dimCount){
+    private void checkProposedMultiDims(int dimCount, int operand){
         // -> dim1 dim2 dim3 ... dimN
         super.visitIntInsn(Opcodes.BIPUSH, dimCount);
         // -> dim1 dim2 dim3 ... dimN numDims
@@ -218,7 +297,10 @@ public class MemoryMethodAdapter extends MethodVisitor {
         }
         // -> arrayRef
         super.visitInsn(Opcodes.DUP);
+        
         // -> arrayRef arrayRef
+        super.visitIntInsn(Opcodes.SIPUSH, sizeofAtype(operand));
+        // -> arrayRef arrayRef sizeof(T_REF)
         super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, arrayCheckerSignature);
         // -> arrayRef
 
