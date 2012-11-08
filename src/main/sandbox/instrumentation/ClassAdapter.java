@@ -10,9 +10,10 @@ import sandbox.lists.NativeWhiteList;
  * instrumenting of individual methods to MemoryMethodAdapter objects
  */
 class ClassAdapter extends org.objectweb.asm.ClassVisitor{
-
-    public ClassAdapter(ClassVisitor cv) {
-        super(Opcodes.ASM4, cv);
+    ClassWriter cw;
+    public ClassAdapter(ClassWriter cw) {
+        super(Opcodes.ASM4, cw);
+        this.cw = cw;
     }
 
     String name;
@@ -26,6 +27,7 @@ class ClassAdapter extends org.objectweb.asm.ClassVisitor{
             String[] interfaces){
 
         this.name = name;
+        System.out.println("Checking Class: " + name);
         cv.visit(version, access, name, signature, superName, interfaces);
 
     }
@@ -36,30 +38,17 @@ class ClassAdapter extends org.objectweb.asm.ClassVisitor{
                                      String signature,
                                      String[] exceptions) {
 
-        boolean isNative = false && (access & Opcodes.ACC_NATIVE) != 0;
-        boolean rewrite = isNative && !NativeWhiteList.allowed(name, base);
-        // remove the `native` modifier on a method if it is not on the
-        // whitelist for native methods
+
         MethodVisitor mv = cv.visitMethod(
-                rewrite ? access & ~Opcodes.ACC_NATIVE : access,
+                access ,
                 base,
                 desc,
                 signature,
                 exceptions
         );
-
-        if(isNative && rewrite){
-            // if this is a native method we want to rewrite, do something
-            // about it toString() turn it into a safe, non-native method
-            return new BanNativesMethodAdapter(mv);
-        }else if (isNative && !rewrite){
-            // if this is a native method we do not want to rewrite, don't
-            // do anything
-            return mv;
-        }else{
-            // if this is a java method, then do all the instrumentation
-            // magic
-            return new BytecodeMethodAdapter(new MemoryMethodAdapter(mv));
-        }
+        return new BanNativesMethodAdapter(
+               new BytecodeMethodAdapter(
+               new MemoryMethodAdapter(mv)));
     }
+
 }

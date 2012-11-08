@@ -1,5 +1,6 @@
 package sandbox.runtime;
 
+import sandbox.lists.NativeWhiteList;
 import sandbox.runtime.Resource;
 
 import java.util.Random;
@@ -13,7 +14,8 @@ import java.util.Random;
 public class Account {
 
     final public Resource memory;
-    final public sandbox.runtime.Resource bytecodes;
+    final public Resource bytecodes;
+    final public NativeWhiteList nativeWhitelist;
 
     final public Account parent;
     final private Object key;
@@ -27,42 +29,44 @@ public class Account {
 
     private Account(){
         memory = new sandbox.runtime.Resource("Memory");
-        bytecodes = new sandbox.runtime.Resource("Bytecodes");
+        bytecodes = new Resource("Bytecodes");
+        nativeWhitelist = NativeWhiteList.defaultList;
         this.parent = null;
         this.key = new Object();
     }
 
     private Account(long maxMemory,
                     long maxBytecodes,
+                    String[] nativeWhiteList,
                     Account parent){
 
         memory = parent.memory.fork(maxMemory);
         bytecodes = parent.bytecodes.fork(maxBytecodes);
-
+        System.out.println("G " + nativeWhiteList);
+        nativeWhitelist = parent.nativeWhitelist.fork(nativeWhiteList);
         this.parent = parent;
         this.key = new Object();
     }
 
     public Object pushMem(long subMaxMemory) throws Exception{
-        return push(subMaxMemory, this.memory.max - this.memory.current);
+        return push(subMaxMemory, this.memory.max - this.memory.current, null);
     }
     public Object pushBytes(long subMaxBytecodes) throws Exception{
-        return push(this.bytecodes.max - this.bytecodes.current, subMaxBytecodes);
+        return push(this.bytecodes.max - this.bytecodes.current, subMaxBytecodes, null);
     }
-    public Object push(long subMaxMemory, long subMaxBytecodes){
+    public Object push(long subMaxMemory, long subMaxBytecodes, String[] nativeWhiteList){
         System.out.println("Pushing " + this);
 
-        Account newAccount = new Account(subMaxMemory, subMaxBytecodes, this);
+        Account newAccount = new Account(subMaxMemory, subMaxBytecodes, nativeWhiteList, this);
         current.set(newAccount);
 
         System.out.println("Pushed " + newAccount);
         return newAccount.key;
     }
 
-
     public void pop(Object possibleKey) throws Exception{
-        
-        if (possibleKey == Account.get().key){
+
+        if (possibleKey == key){
             System.out.println("Popping From " + this);
 
             parent.memory.join(memory);
@@ -79,7 +83,7 @@ public class Account {
     }
 
     public String toString(){
-        return "Account " + key + "\n" + memory + "\n" + bytecodes;
+        return "Account " + key + "\n" + memory + "\n" + bytecodes + "\n" + nativeWhitelist;
     }
 
 }

@@ -2,6 +2,7 @@ package sandbox.instrumentation;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import sandbox.agent.JavaAgent;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
@@ -15,16 +16,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * which can be used by the sandbox.instrumentation to transform loaded classes
  */
 public class Transformer implements ClassFileTransformer {
-    public static Set<Class<?>> transformMe = Collections.newSetFromMap(new ConcurrentHashMap<Class<?>,Boolean>());
+    public static Set<Class<?>> transformMe = Collections.newSetFromMap(new ConcurrentHashMap<Class<?>, Boolean>());
 
     /**
      * Register the transformer with the Instrumentation object, just once,
      * when the class is initially loaded.
      */
     static {
-        sandbox.agent.JavaAgent.instrumentation.addTransformer(
+        JavaAgent.instrumentation.addTransformer(
             new Transformer(),
-            sandbox.agent.JavaAgent.instrumentation.isRetransformClassesSupported()
+            JavaAgent.instrumentation.isRetransformClassesSupported()
         );
     }
 
@@ -73,7 +74,7 @@ public class Transformer implements ClassFileTransformer {
             System.out.println("Failed to instrument class: " + e);
             e.printStackTrace();
             throw e;
-        } catch (StackOverflowError e) {
+        } catch (Error e) {
             System.out.println("Failed to instrument class: " + e);
             e.printStackTrace();
             throw e;

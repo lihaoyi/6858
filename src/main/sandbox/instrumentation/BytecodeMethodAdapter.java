@@ -11,4 +11,5 @@ public class BytecodeMethodAdapter extends MethodVisitor {
     public BytecodeMethodAdapter(MethodVisitor methodVisitor) {
         super(Opcodes.ASM4, methodVisitor);
     }
+
 }

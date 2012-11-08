@@ -32,6 +32,7 @@ public class MyClassLoader extends ClassLoader {
     public Class<?> loadClass(String name) throws ClassNotFoundException {
 
         if (specialClasses.containsKey(name)) return findClass(name);
+        if (name.startsWith("sandbox")) return super.loadClass(name);
 
         if (!BlackList.allow(name)) throw new ClassNotFoundException("Cannot load blacklisted class: " + name);
 

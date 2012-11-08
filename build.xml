@@ -31,6 +31,7 @@
 			<attribute name="Premain-Class" value="sandbox.agent.JavaAgent"/>
 			<attribute name="Can-Redefine-Classes" value="true"/>
 			<attribute name="Can-Retransform-Classes" value="true"/>
+            <attribute name="Can-Set-Native-Method-Prefix" value="true"/>
 			<attribute name="Main-Class" value="${main-class}"/>
 		</manifest>
 	</jar>
