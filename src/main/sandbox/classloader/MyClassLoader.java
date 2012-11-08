@@ -1,13 +1,13 @@
-package sandbox;
+package sandbox.classloader;
 
 import sandbox.agent.JavaAgent;
 import sandbox.instrumentation.Transformer;
+import sandbox.lists.BlackList;
 
 import java.util.Map;
 
 public class MyClassLoader extends ClassLoader {
     Map<String, byte[]> specialClasses;
-
 
     public MyClassLoader(Map<String, byte[]> specialClasses) {
         this.specialClasses = specialClasses;
@@ -15,9 +15,7 @@ public class MyClassLoader extends ClassLoader {
 
     public Class<?> instrument(Class<?> in){
         try{
-            //-javaagent:out/artifacts/Main_jar/Main.jar
             if(JavaAgent.instrumentation.isModifiableClass(in)){
-                //System.out.println("Classload Instrumenting " + in.getName());
                 Transformer.transformMe.add(in);
                 JavaAgent.instrumentation.retransformClasses(in);
                 Transformer.transformMe.remove(in);
@@ -27,14 +25,17 @@ public class MyClassLoader extends ClassLoader {
             }
 
             return in;
-        }catch(Exception e){ return in; }
+        }catch(Exception e){ return in;
+        }catch(Error e){ return in;}
     }
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
 
         if (specialClasses.containsKey(name)) return findClass(name);
-        else if (name.startsWith("sandbox")) return super.loadClass(name);
-        else return instrument(super.loadClass(name));
+
+        if (!BlackList.allow(name)) throw new ClassNotFoundException("Cannot load blacklisted class: " + name);
+
+        return instrument(super.loadClass(name));
 
     }
 

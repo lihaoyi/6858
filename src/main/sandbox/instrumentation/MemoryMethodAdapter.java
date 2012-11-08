@@ -9,7 +9,7 @@ import org.objectweb.asm.commons.LocalVariablesSorter;
  * instruments the sites of memory allocation in order to track and limit
  * the number of allocations that can be done. Does a ton of bytecode mangling.
  */
-class MethodAdapter extends MethodVisitor {
+public class MemoryMethodAdapter extends MethodVisitor {
 
     // Dictionary of primitive type opcode to English name.
     private static final String[] primitiveTypeNames = {
@@ -29,16 +29,16 @@ class MethodAdapter extends MethodVisitor {
     /**
      * The LocalVariablesSorter used in this adapter.  Lame that it's public but
      * the ASM architecture requires setting it from the outside after this
-     * MethodAdapter is fully constructed and the LocalVariablesSorter
+     * MemoryMethodAdapter is fully constructed and the LocalVariablesSorter
      * constructor requires a reference to this adapter.  The only setter of
      * this should be ClassAdapter.visitMethod().
      */
     public LocalVariablesSorter lvs = null;
 
     /**
-     * A new MethodAdapter is created for each method that gets visited.
+     * A new MemoryMethodAdapter is created for each method that gets visited.
      */
-    public MethodAdapter(MethodVisitor mv) { super(Opcodes.ASM4, mv); }
+    public MemoryMethodAdapter(MethodVisitor mv) { super(Opcodes.ASM4, mv); }
 
     /**
      * newarray shows up as an instruction taking an int operand (the primitive
@@ -46,7 +46,6 @@ class MethodAdapter extends MethodVisitor {
      */
     @Override
     public void visitIntInsn(int opcode, int operand) {
-        //super.visitIntInsn(opcode, operand);
 
         if (opcode == Opcodes.NEWARRAY) {
             if (operand >= 4 && operand <= 11) {
