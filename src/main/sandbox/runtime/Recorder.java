@@ -1,6 +1,6 @@
 package sandbox.runtime;
 
-import sandbox.instrumentation.BanNativesMethodAdapter;
+
 
 /**
  * Runtime target for the instrumented bytecode to hit, by providing two
@@ -28,12 +28,5 @@ public class Recorder {
         sandbox.runtime.Account.get().memory.increment(counts, size);
         disabled = false;
     }
-    public static void checkNative(short id){
-        if (!disabled) disabled = true;
-        else return;
-        if(!Account.get().nativeWhitelist.allowed(id)){
-            throw new BannedNativeException(BanNativesMethodAdapter.cache.get(id));
-        }
-        disabled = false;
-    }
+
 }

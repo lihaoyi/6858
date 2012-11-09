@@ -2,7 +2,7 @@ package sandbox.classloader;
 
 import sandbox.agent.JavaAgent;
 import sandbox.instrumentation.Transformer;
-import sandbox.lists.BlackList;
+import sandbox.lists.WhiteList;
 
 import java.util.Map;
 
@@ -30,14 +30,10 @@ public class MyClassLoader extends ClassLoader {
     }
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-
         if (specialClasses.containsKey(name)) return findClass(name);
         if (name.startsWith("sandbox")) return super.loadClass(name);
-
-        if (!BlackList.allow(name)) throw new ClassNotFoundException("Cannot load blacklisted class: " + name);
-
+        if (!WhiteList.allow(name)) throw new ClassNotFoundException("Cannot load non-whitelisted class: " + name);
         return instrument(super.loadClass(name));
-
     }
 
     @Override

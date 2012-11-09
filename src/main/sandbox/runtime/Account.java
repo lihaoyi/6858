@@ -1,6 +1,5 @@
 package sandbox.runtime;
 
-import sandbox.lists.NativeWhiteList;
 import sandbox.runtime.Resource;
 
 import java.util.Random;
@@ -15,7 +14,6 @@ public class Account {
 
     final public Resource memory;
     final public Resource bytecodes;
-    final public NativeWhiteList nativeWhitelist;
 
     final public Account parent;
     final private Object key;
@@ -30,34 +28,32 @@ public class Account {
     private Account(){
         memory = new sandbox.runtime.Resource("Memory");
         bytecodes = new Resource("Bytecodes");
-        nativeWhitelist = NativeWhiteList.defaultList;
         this.parent = null;
         this.key = new Object();
     }
 
     private Account(long maxMemory,
                     long maxBytecodes,
-                    String[] nativeWhiteList,
+
                     Account parent){
 
         memory = parent.memory.fork(maxMemory);
         bytecodes = parent.bytecodes.fork(maxBytecodes);
-        System.out.println("G " + nativeWhiteList);
-        nativeWhitelist = parent.nativeWhitelist.fork(nativeWhiteList);
+
         this.parent = parent;
         this.key = new Object();
     }
 
     public Object pushMem(long subMaxMemory) throws Exception{
-        return push(subMaxMemory, this.memory.max - this.memory.current, null);
+        return push(subMaxMemory, this.memory.max - this.memory.current);
     }
     public Object pushBytes(long subMaxBytecodes) throws Exception{
-        return push(this.bytecodes.max - this.bytecodes.current, subMaxBytecodes, null);
+        return push(this.bytecodes.max - this.bytecodes.current, subMaxBytecodes);
     }
-    public Object push(long subMaxMemory, long subMaxBytecodes, String[] nativeWhiteList){
+    public Object push(long subMaxMemory, long subMaxBytecodes){
         System.out.println("Pushing " + this);
 
-        Account newAccount = new Account(subMaxMemory, subMaxBytecodes, nativeWhiteList, this);
+        Account newAccount = new Account(subMaxMemory, subMaxBytecodes, this);
         current.set(newAccount);
 
         System.out.println("Pushed " + newAccount);
@@ -83,7 +79,7 @@ public class Account {
     }
 
     public String toString(){
-        return "Account " + key + "\n" + memory + "\n" + bytecodes + "\n" + nativeWhitelist;
+        return "Account " + key + "\n" + memory + "\n" + bytecodes;
     }
 
 }

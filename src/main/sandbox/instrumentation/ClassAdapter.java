@@ -3,7 +3,6 @@
 package sandbox.instrumentation;
 
 import org.objectweb.asm.*;
-import sandbox.lists.NativeWhiteList;
 
 /**
  * In charge of instrumenting an entire class. Does nothing but hand off the
@@ -46,9 +45,8 @@ class ClassAdapter extends org.objectweb.asm.ClassVisitor{
                 signature,
                 exceptions
         );
-        return new BanNativesMethodAdapter(
-               new BytecodeMethodAdapter(
-               new MemoryMethodAdapter(mv)));
+        return new BytecodeMethodAdapter(
+               new MemoryMethodAdapter(mv));
     }
 
 }

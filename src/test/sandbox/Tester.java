@@ -1,8 +1,11 @@
 package sandbox;
 
 import org.apache.commons.io.IOUtils;
+import org.jruby.embed.ScriptingContainer;
+
+import org.python.util.PythonInterpreter;
 import sandbox.classloader.MyClassLoader;
-import sandbox.lists.NativeWhiteList;
+
 import sandbox.runtime.Account;
 import sandbox.runtime.Recorder;
 
@@ -31,8 +34,7 @@ public class Tester {
         System.out.println("Executing Code...");
         System.out.println("============================================");
 
-
-        Object key = Account.get().push(15000, 1000000, NativeWhiteList.defaultWhitelist);
+        Object key = Account.get().push(90000, 1000000);
         Class c = bcl.loadClass("HelloWorld");
         Method m = c.getMethod("main");
         String result = (String) m.invoke(null);

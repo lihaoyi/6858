@@ -1,7 +1,12 @@
+import java.io.File;
 import java.lang.Object;
 import java.lang.reflect.Array;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.jar.Attributes;
 
-import com.sun.servicetag.SystemEnvironment;
+import org.jruby.embed.ScriptingContainer;
+import org.python.util.PythonInterpreter;
 import sandbox.runtime.Account;
 
 /**
@@ -30,6 +35,13 @@ public class HelloWorld {
 
         java.lang.reflect.Array.newInstance(Object.class, dims);
         checkIncrement(120 * 8); // sizeof(T_REF) is 8 for now.
+
+        java.util.Date d = new Date();
+
+        // this should throw an exception
+        try{
+            java.util.jar.Attributes e = new Attributes();
+        }catch(Error e){}
 
         if (output == null) return "Success! Nothing broke";
         else return output;

@@ -27,7 +27,7 @@
         <jar destfile="${jar.dir}/${jar.name}" basedir="${classes.dir}">
 		<manifest>
 			<attribute name="Manifest-Version" value="1.0"/>
-			<attribute name="Boot-Class-Path" value="./${jar.name} ../../${lib.dir}/asm-all-4.0.jar ../../${lib.dir}/commons-io-2.1.jar"/>
+			<attribute name="Boot-Class-Path" value="./${jar.name} ../../${lib.dir}/asm-all-4.0.jar ../../${lib.dir}/jython.jar ../../${lib.dir}/commons-io-2.1.jar"/>
 			<attribute name="Premain-Class" value="sandbox.agent.JavaAgent"/>
 			<attribute name="Can-Redefine-Classes" value="true"/>
 			<attribute name="Can-Retransform-Classes" value="true"/>

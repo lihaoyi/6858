@@ -1,0 +1,16 @@
++java.lang.Object
++java.lang.String
++java.lang.Throwable
++java.lang.Error
++java.lang.reflect.Array
++java.lang.Class
++java.lang.System
++java.io.PrintStream
++org.python.util.PythonInterpreter
++org.jruby.embed.ScriptingContainer
++java.util
+    -.prefs
+    -.jar
+    -.zip
+    -.ResourceBundle
+    -.TimeZone
