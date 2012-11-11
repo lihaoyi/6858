@@ -148,6 +148,13 @@ public class BytecodeMethodAdapter extends MethodVisitor {
         mv.visitIincInsn(var, increment);
     }
 
+    @Override
+    public void visitLabel(Label label) {
+        /* Check the block preceding the label */
+        checkCurrentBytecodeCount();
+        mv.visitLabel(label);
+    }
+
     /* FIXME */
     @Override
     public void visitTableSwitchInsn(final int min, final int max,
