@@ -39,6 +39,12 @@ public class BytecodeMethodAdapter extends MethodVisitor {
     @Override
     public void visitInsn(final int opcode) {
         bytecode_count += 1;
+        /* Control flow change */
+        if (opcode == Opcodes.IRETURN || opcode == Opcodes.LRETURN ||
+            opcode == Opcodes.FRETURN || opcode == Opcodes.DRETURN ||
+            opcode == Opcodes.ARETURN || opcode == Opcodes.RETURN) {
+            checkCurrentBytecodeCount();
+        }
         mv.visitInsn(opcode);
     }
 
@@ -60,6 +66,11 @@ public class BytecodeMethodAdapter extends MethodVisitor {
             bytecode_count += 4;
         } else {
             bytecode_count += 2;
+        }
+
+        /* Control flow change */
+        if (opcode == Opcodes.RET) {
+            checkCurrentBytecodeCount();
         }
         mv.visitVarInsn(opcode, var);
     }
