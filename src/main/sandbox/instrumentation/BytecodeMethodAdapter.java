@@ -6,16 +6,12 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Handle;
 
 /* TODO:
- * - fix some FIXMEs to properly compute bytecode size based on opcode/operands
  * - decide what to do with long chains of instructions with no control transfer (e.g. check every 100 bytecodes)
  */
 
 /**
- * Method adapter meant to add bytecode-counting instrumentation to the
+ * Method adapter meant to add instruction-counting instrumentation to the
  * processed methods
- *
- * Size counting code adapted from ASM4
- * src/org/objectweb/asm/commons/CodeSizeEvaluator.java
  */
 public class BytecodeMethodAdapter extends MethodVisitor {
 
@@ -23,22 +19,22 @@ public class BytecodeMethodAdapter extends MethodVisitor {
     private final String checkerMethod = "checkBytecodeCount";
     private final String checkerSignature = "(I)V";
 
-    private int bytecode_count = 0;
+    private int instruction_count = 0;
 
     public BytecodeMethodAdapter(MethodVisitor methodVisitor) {
         super(Opcodes.ASM4, methodVisitor);
     }
 
-    /* Insert check bytecode count for the previous block of bytecodes */
+    /* Insert check bytecode count for the preceding basic block of bytecodes */
     private void checkCurrentBytecodeCount() {
-        super.visitIntInsn(Opcodes.SIPUSH, bytecode_count);
+        super.visitIntInsn(Opcodes.SIPUSH, instruction_count);
         super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, checkerSignature);
-        bytecode_count = 0;
+        instruction_count = 0;
     }
 
     @Override
     public void visitInsn(final int opcode) {
-        bytecode_count += 1;
+        instruction_count += 1;
         /* Control flow change */
         if (opcode == Opcodes.IRETURN || opcode == Opcodes.LRETURN ||
             opcode == Opcodes.FRETURN || opcode == Opcodes.DRETURN ||
@@ -50,24 +46,13 @@ public class BytecodeMethodAdapter extends MethodVisitor {
 
     @Override
     public void visitIntInsn(final int opcode, final int operand) {
-        if (opcode == Opcodes.SIPUSH) {
-            bytecode_count += 3;
-        } else {
-            bytecode_count += 2;
-        }
+        instruction_count += 1;
         mv.visitIntInsn(opcode, operand);
     }
 
     @Override
     public void visitVarInsn(final int opcode, final int var) {
-        if (var < 4 && opcode != Opcodes.RET) {
-            bytecode_count += 1;
-        } else if (var >= 256) {
-            bytecode_count += 4;
-        } else {
-            bytecode_count += 2;
-        }
-
+        instruction_count += 1;
         /* Control flow change */
         if (opcode == Opcodes.RET) {
             checkCurrentBytecodeCount();
@@ -77,25 +62,21 @@ public class BytecodeMethodAdapter extends MethodVisitor {
 
     @Override
     public void visitTypeInsn(final int opcode, final String type) {
-        bytecode_count += 3;
+        instruction_count += 1;
         mv.visitTypeInsn(opcode, type);
     }
 
     @Override
     public void visitFieldInsn(final int opcode, final String owner,
             final String name, final String desc) {
-        bytecode_count += 3;
+        instruction_count += 1;
         mv.visitFieldInsn(opcode, owner, name, desc);
     }
 
     @Override
     public void visitMethodInsn(final int opcode, final String owner,
             final String name, final String desc) {
-        if (opcode == Opcodes.INVOKEINTERFACE) {
-            bytecode_count += 5;
-        } else {
-            bytecode_count += 3;
-        }
+        instruction_count += 1;
         /* Control flow change */
         checkCurrentBytecodeCount();
         mv.visitMethodInsn(opcode, owner, name, desc);
@@ -104,7 +85,7 @@ public class BytecodeMethodAdapter extends MethodVisitor {
     @Override
     public void visitInvokeDynamicInsn(String name, String desc, Handle bsm,
             Object... bsmArgs) {
-        bytecode_count += 5;
+        instruction_count += 1;
         /* Control flow change */
         checkCurrentBytecodeCount();
         mv.visitInvokeDynamicInsn(name, desc, bsm, bsmArgs);
@@ -112,14 +93,7 @@ public class BytecodeMethodAdapter extends MethodVisitor {
 
     @Override
     public void visitJumpInsn(final int opcode, final Label label) {
-        /* FIXME */
-        // minSize += 3;
-        if (opcode == Opcodes.GOTO || opcode == Opcodes.JSR) {
-            // maxSize += 5;
-        } else {
-            // maxSize += 8;
-        }
-        bytecode_count += 11;
+        instruction_count += 1;
         /* Control flow change */
         checkCurrentBytecodeCount();
         mv.visitJumpInsn(opcode, label);
@@ -127,24 +101,13 @@ public class BytecodeMethodAdapter extends MethodVisitor {
 
     @Override
     public void visitLdcInsn(final Object cst) {
-        if (cst instanceof Long || cst instanceof Double) {
-            bytecode_count += 3;
-        } else {
-            /* FIXME */
-            // minSize += 2;
-            // maxSize += 3;
-            bytecode_count += 3;
-        }
+        instruction_count += 1;
         mv.visitLdcInsn(cst);
     }
 
     @Override
     public void visitIincInsn(final int var, final int increment) {
-        if (var > 255 || increment > 127 || increment < -128) {
-            bytecode_count += 6;
-        } else {
-            bytecode_count += 3;
-        }
+        instruction_count += 1;
         mv.visitIincInsn(var, increment);
     }
 
@@ -155,25 +118,19 @@ public class BytecodeMethodAdapter extends MethodVisitor {
         mv.visitLabel(label);
     }
 
-    /* FIXME */
     @Override
     public void visitTableSwitchInsn(final int min, final int max,
             final Label dflt, final Label... labels) {
-        // minSize += 13 + labels.length * 4;
-        // maxSize += 16 + labels.length * 4;
-        bytecode_count += 16 + labels.length * 4;
+        instruction_count += 1;
         /* Control flow change */
         checkCurrentBytecodeCount();
         mv.visitTableSwitchInsn(min, max, dflt, labels);
     }
 
-    /* FIXME */
     @Override
     public void visitLookupSwitchInsn(final Label dflt, final int[] keys,
             final Label[] labels) {
-        // minSize += 9 + keys.length * 8;
-        // maxSize += 12 + keys.length * 8;
-        bytecode_count += 12 + keys.length * 8;
+        instruction_count += 1;
         /* Control flow change */
         checkCurrentBytecodeCount();
         mv.visitLookupSwitchInsn(dflt, keys, labels);
@@ -181,7 +138,7 @@ public class BytecodeMethodAdapter extends MethodVisitor {
 
     @Override
     public void visitMultiANewArrayInsn(final String desc, final int dims) {
-        bytecode_count += 4;
+        instruction_count += 1;
         mv.visitMultiANewArrayInsn(desc, dims);
     }
 }
