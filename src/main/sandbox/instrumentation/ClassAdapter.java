@@ -3,6 +3,7 @@
 package sandbox.instrumentation;
 
 import org.objectweb.asm.*;
+import org.objectweb.asm.util.TraceMethodVisitor;
 
 /**
  * In charge of instrumenting an entire class. Does nothing but hand off the
@@ -45,8 +46,12 @@ class ClassAdapter extends org.objectweb.asm.ClassVisitor{
                 signature,
                 exceptions
         );
-        return new BytecodeMethodAdapter(
-               new MemoryMethodAdapter(mv));
+        /* Only memory adapter */
+        // return new MemoryMethodAdapter(new TraceMethodVisitor(mv, new CustomTextifier()));
+        /* Only bytecode adapter */
+        // return new BytecodeMethodAdapter(new TraceMethodVisitor(mv, new CustomTextifier()));
+        /* Bytecode then memory */
+        return new BytecodeMethodAdapter(new MemoryMethodAdapter(new TraceMethodVisitor(mv, new CustomTextifier())));
     }
 
 }

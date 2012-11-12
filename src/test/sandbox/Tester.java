@@ -34,7 +34,7 @@ public class Tester {
         System.out.println("Executing Code...");
         System.out.println("============================================");
 
-        Object key = Account.get().push(90000, 1000000);
+        Object key = Account.get().push(90000, 2000000);
         Class c = bcl.loadClass("HelloWorld");
         Method m = c.getMethod("main");
         String result = (String) m.invoke(null);

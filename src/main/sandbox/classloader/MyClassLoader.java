@@ -19,7 +19,10 @@ public class MyClassLoader extends ClassLoader {
                 Transformer.transformMe.add(in);
                 JavaAgent.instrumentation.retransformClasses(in);
                 Transformer.transformMe.remove(in);
-                System.out.println("Instrumented " + in.getName());
+                System.out.println("Instrumented " + in.getName() + "\n");
+                System.out.println("================================================================================");
+                System.out.println("================================================================================");
+                System.out.println("================================================================================");
             }else{
                 System.out.println("Cannot Instrument" + in.getName());
             }
