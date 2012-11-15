@@ -10,7 +10,7 @@ package sandbox.runtime;
 public class Recorder {
 
     volatile static boolean disabled = false;
-    volatile static boolean disabled_bc = false;
+    volatile static boolean disabled_ic = false;
 
     // Checks whether we can allocate count elements of size bytes.
     public static void checkAllocation(int count, int size){
@@ -24,12 +24,12 @@ public class Recorder {
     }
 
 
-    public static void checkBytecodeCount(int count) {
-        if (!disabled_bc) disabled_bc = true;
+    public static void checkInstructionCount(int count) {
+        if (!disabled_ic) disabled_ic = true;
         else return;
 
         sandbox.runtime.Account.get().bytecodes.increment(count);
-        disabled_bc = false;
+        disabled_ic = false;
     }
 
     public static void checkAllocation(int[] counts, int size){
