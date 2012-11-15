@@ -4,12 +4,16 @@ import sandbox.agent.JavaAgent;
 import sandbox.instrumentation.Transformer;
 import sandbox.lists.WhiteList;
 
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Map;
 
-public class MyClassLoader extends ClassLoader {
+public class MyClassLoader extends URLClassLoader {
     Map<String, byte[]> specialClasses;
 
     public MyClassLoader(Map<String, byte[]> specialClasses) {
+
+        super(((URLClassLoader)ClassLoader.getSystemClassLoader()).getURLs());
         this.specialClasses = specialClasses;
     }
 
@@ -19,7 +23,7 @@ public class MyClassLoader extends ClassLoader {
                 Transformer.transformMe.add(in);
                 JavaAgent.instrumentation.retransformClasses(in);
                 Transformer.transformMe.remove(in);
-                System.out.println("Instrumented " + in.getName());
+                //System.out.println("Instrumented " + in.getName());
             }else{
                 System.out.println("Cannot Instrument" + in.getName());
             }
@@ -30,19 +34,25 @@ public class MyClassLoader extends ClassLoader {
     }
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-        if (specialClasses.containsKey(name)) return findClass(name);
+        System.out.println("Loading " + name);
+        if(this.findLoadedClass(name) != null){
+            return this.findLoadedClass(name);
+        }
+        if (specialClasses.containsKey(name)){
+            byte[] b = specialClasses.get(name);
+            return instrument(defineClass(name, b, 0, b.length));
+        }
         if (name.startsWith("sandbox")) return super.loadClass(name);
-        if (!WhiteList.allow(name)) throw new ClassNotFoundException("Cannot load non-whitelisted class: " + name);
+        //if (!WhiteList.allow(name)) throw new ClassNotFoundException("Cannot load non-whitelisted class: " + name);
+        if (!name.startsWith("java") && !name.startsWith("sun")) return instrument(super.findClass(name));
         return instrument(super.loadClass(name));
+
+
+
+//        return instrument(super.loadClass(name));
+
+
     }
 
-    @Override
-    protected Class findClass(String name) {
-        byte[] b = loadClassData(name);
-        return instrument(defineClass(name, b, 0, b.length));
-    }
 
-    private byte[] loadClassData(String name) {
-        return specialClasses.get(name);
-    }
 }

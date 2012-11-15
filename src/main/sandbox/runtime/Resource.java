@@ -32,6 +32,7 @@ public class Resource {
     public void increment(int[] counts, int size){
         long product = 1;
         for(int i = 0; i < counts.length; i++){
+            if(counts[i] == 0) return;
             if (counts[i] > Long.MAX_VALUE / product) {
                 throw new sandbox.runtime.ResourceLimitException("Trying to allocate more than 2^63 bytes of memory");
             }
