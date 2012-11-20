@@ -1,27 +1,3 @@
-500g Chestnuts (2 bags)
-1 bottle Red Bean Paste
-
-
-Milo
-Miruku
-
-Carbonara
-12 eggs
-1kg spaghetti
-
-Chicken Rice
-2 Chickens
-3kg thai rice
-1 pc Ginger
-2 head Garlic
-
-Cucumbers
-Coriander
-Light soy
-Dark soy
-Sesame				X
-
-
 com.sun.imageio.plugins.jpg.JPEGImageReader
 com.sun.imageio.plugins.jpg.JPEGImageWriter
 com.sun.security.auth.module.NTSystem
