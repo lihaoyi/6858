@@ -19,8 +19,8 @@ public class Scripts {
 //        p.exec("x = 10");
         ScriptingContainer container = new ScriptingContainer(LocalVariableBehavior.PERSISTENT);
         container.runScriptlet("p=0.9");
-        //container.runScriptlet("x=[0.9] * 10000000000");
-        container.runScriptlet("nil while true");
+        container.runScriptlet("x=[0.9] * 10000000000");
+//        container.runScriptlet("nil while true");
 
 
         //container.runScriptlet("x = 'a' * 1000000; puts 'Ruby ' + File.read('.gitignore')");
