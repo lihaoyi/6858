@@ -4,6 +4,7 @@ package sandbox.instrumentation;
 
 import org.objectweb.asm.*;
 import org.objectweb.asm.util.TraceMethodVisitor;
+import org.objectweb.asm.commons.JSRInlinerAdapter;
 
 /**
  * In charge of instrumenting an entire class. Does nothing but hand off the
@@ -27,7 +28,7 @@ class ClassAdapter extends org.objectweb.asm.ClassVisitor{
             String[] interfaces){
 
         this.name = name;
-        System.out.println("Checking Class: " + name);
+
         cv.visit(version, access, name, signature, superName, interfaces);
 
     }
@@ -46,12 +47,9 @@ class ClassAdapter extends org.objectweb.asm.ClassVisitor{
                 signature,
                 exceptions
         );
-        /* Only memory adapter */
-        // return new MemoryMethodAdapter(new TraceMethodVisitor(mv, new CustomTextifier()));
-        /* Only bytecode adapter */
-        // return new BytecodeMethodAdapter(new TraceMethodVisitor(mv, new CustomTextifier()));
-        /* Bytecode then memory */
-        return new BytecodeMethodAdapter(new MemoryMethodAdapter(new TraceMethodVisitor(mv, new CustomTextifier())));
+        JSRInlinerAdapter jia = new JSRInlinerAdapter(mv, access, base, desc, signature, exceptions);
+        return new BytecodeMethodAdapter(
+               new MemoryMethodAdapter(new TraceMethodVisitor(jia, new CustomTextifier())));
     }
 
 }

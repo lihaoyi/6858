@@ -16,7 +16,6 @@ public class WhiteList {
      */
     public static boolean allow(String s){
         s = s.replace('/', '.');
-        System.out.println(s);
         return !list.validate(s);
 
     }
