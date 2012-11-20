@@ -1,0 +1,131 @@
+500g Chestnuts (2 bags)
+1 bottle Red Bean Paste
+
+
+Milo
+Miruku
+
+Carbonara
+12 eggs
+1kg spaghetti
+
+Chicken Rice
+2 Chickens
+3kg thai rice
+1 pc Ginger
+2 head Garlic
+
+Cucumbers
+Coriander
+Light soy
+Dark soy
+Sesame				X
+
+
+com.sun.imageio.plugins.jpg.JPEGImageReader
+com.sun.imageio.plugins.jpg.JPEGImageWriter
+com.sun.security.auth.module.NTSystem
+java.awt.AWTEvent
+java.awt.Button
+java.awt.Checkbox
+java.awt.CheckMenuItem
+java.awt.Color
+java.awt.Component
+java.awt.Container
+java.awt.Cursor
+java.awt.Dialog
+java.awt.Dimension
+java.awt.Event
+java.awt.FileDialog
+java.awt.Font
+java.awt.FontMetrics
+java.awt.Frame
+java.awt.Insets
+java.awt.KeyboardFocusManager
+java.awt.Label
+java.awt.Menu
+java.awt.Menubar
+java.awt.MenuComponent
+java.awt.MenuItem
+java.awt.Rectangle
+java.awt.Scrollbar
+java.awt.ScrollPane
+java.awt.ScrollPaneAdjustable
+java.awt.SplashScreen
+java.awt.TextArea
+java.awt.TextField
+java.awt.Toolkit
+java.awt.TrayIcon
+java.awt.Window
+java.awt.event.InputEvent
+java.awt.event.KeyEvent
+java.awt.event.MouseEvent
+java.awt.image.BufferedImage
+java.awt.image.ColorModel
+java.awt.image.ComponentSampleModel
+java.awt.image.IndexColorModel
+java.awt.image.Kernel
+java.awt.image.Raster
+java.awt.image.SampleModel
+java.awt.image.SinglePixelPackedSampleModel
+java.io.Console
+java.io.FileDescriptor
+java.io.FileInputStream
+java.io.FileOutputStream
+java.io.FileSystem
+java.io.ObjectInputStream
+java.io.ObjectOutputStream
+java.io.ObjectStreamClass
+java.io.RandomAccessFile
+java.io.Win32FileSystem
+java.io.WinNTFileSystem
+java.lang.Class
+java.lang.ClassLoader
+java.lang.Compiler
+java.lang.Double
+java.lang.Float
+java.lang.Object
+java.lang.Package
+java.lang.ProcessEnvironment
+java.lang.ProcessImpl
+java.lang.Runtime
+java.lang.SecurityManager
+java.lang.Shutdown
+java.lang.StrictMath
+java.lang.String
+java.lang.System
+java.lang.Thread
+java.lang.Throwable
+java.lang.invoke.MethodHandle
+java.lang.invoke.MethodHandleNatives
+java.lang.ref.Finalizer
+java.lang.reflect.Array
+java.lang.reflect.Proxy
+java.net.DatagramPacket
+java.net.DualStackPlainDatagramSocketImpl
+java.net.DualStackPlainSocketImpl
+java.net.Inet4Address
+java.net.Inet4AddressImpl
+java.net.Inet6Address
+java.net.Inet6AddressImpl
+java.net.InetAddress
+java.net.NetworkInterface
+java.net.SocketInputStream
+java.net.SocketOutputStream
+java.net.TwoStacksPlainDatagramSocketImpl
+java.net.TwoStacksPlainSocketImpl
+java.nio.Bits
+java.nio.MappedByteBuffer
+java.security.AccessController
+java.sql.DriverManager
+java.util.ResourceBundle
+java.util.TimeZone
+java.util.concurrent.atomic.AtomicLong
+java.util.jar.jarFile
+java.util.logging.FileHandler
+javautil.prefs.WindowPreferences
+java.util.zip.Adler32
+java.util.zip.CRC32
+java.util.zip.Deflater
+java.util.zip.Inflater
+java.util.zip.ZipFile
