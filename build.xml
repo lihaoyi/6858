@@ -4,6 +4,7 @@
     <property name="build.dir"   value="build"/>
 
     <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="safe.dir" value="${build.dir}/safelib"/>
     <property name="jar.dir"     value="${build.dir}/jar"/>
 
     <property name="jar.name"    value="Tester.jar"/>
@@ -19,7 +20,9 @@
 
     <target name="compile" depends="clean">
         <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${safe.dir}"/>
         <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
+        <javac srcdir="${src.dir}/safelib" destdir="${safe.dir}" classpathref="classpath"/>
     </target>
 
     <target name="jar" depends="compile">
