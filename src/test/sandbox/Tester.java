@@ -20,6 +20,11 @@ import java.util.HashMap;
 public class Tester {
     public static void main(String[] args) throws Exception {
 
+	System.setProperty("java.security.policy", "/home/frankli/Projects/6858/resources/Test.policy");
+	if(System.getSecurityManager()==null){
+		System.setSecurityManager(new SecurityManager());
+	}
+
         System.out.println("Loading Source...");
         final String sourceCode = loadFile("resources/HelloWorld.java");
 
@@ -31,10 +36,12 @@ public class Tester {
             put("HelloWorld", byteCode);
         }});
 
+
         System.out.println("Executing Code...");
         System.out.println("============================================");
 
-        Object key = Account.get().push(90000, 1000000);
+        Object key = Account.get().push(90000, 9000000);
+
         Class c = bcl.loadClass("HelloWorld");
         Method m = c.getMethod("main");
         String result = (String) m.invoke(null);
