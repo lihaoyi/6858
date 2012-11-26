@@ -26,15 +26,16 @@ public class Tester {
         System.out.println("Compiling...");
         final byte[] byteCode = Compiler.compile("HelloWorld", sourceCode);
 
+        System.out.println("Setting up Classloader...");
+        MyClassLoader bcl = new MyClassLoader(new HashMap<String, byte[]>() {{
+            put("HelloWorld", byteCode);
+        }});
 	System.setProperty("java.security.policy", "resources/Test.policy");
 	if(System.getSecurityManager()==null){
 		System.setSecurityManager(new SecurityManager());
 	}
 
-        System.out.println("Setting up Classloader...");
-        MyClassLoader bcl = new MyClassLoader(new HashMap<String, byte[]>() {{
-            put("HelloWorld", byteCode);
-        }});
+
 
         System.out.println("Executing Code...");
         System.out.println("============================================");
