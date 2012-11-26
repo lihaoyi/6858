@@ -37,29 +37,18 @@ public class HelloWorld {
         java.lang.reflect.Array.newInstance(Object.class, dims);
         checkIncrement(120 * 8); // sizeof(T_REF) is 8 for now.
 
-        File f;
-        f=new File("/home/frankli/Projects/6858/resources/test.txt");
+	File f;
+        f=new File("test.txt");
         try{
                 f.createNewFile();
+		System.out.println("Good, Created resource/test.txt");
         }catch(IOException e){
+		System.err.println("IOException: ");
                 System.err.println(e);
         }catch(SecurityException e){
 		System.err.println("Hmm should have been able to write to test.txt, but could not");
 	}
-
-	System.out.println("Good, Created resource/test.txt");
-
-	File f2;
-        f2=new File("/home/frankli/Projects/6858/resources/test2.txt");
-        try{
-                f2.createNewFile();
-        }catch(IOException e){
-                System.err.println(e);
-        }catch(SecurityException e){
-		System.err.println("Good, Couldn't write to test2.txt!");
-	}
-
-
+	
         java.util.Date d = new Date();
 
         // this should throw an exception

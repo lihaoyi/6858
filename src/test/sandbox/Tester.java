@@ -20,7 +20,7 @@ import java.util.HashMap;
 public class Tester {
     public static void main(String[] args) throws Exception {
 
-	System.setProperty("java.security.policy", "/home/frankli/Projects/6858/resources/Test.policy");
+	System.setProperty("java.security.policy", "resources/Test.policy");
 	if(System.getSecurityManager()==null){
 		System.setSecurityManager(new SecurityManager());
 	}
