@@ -20,27 +20,26 @@ import java.util.HashMap;
 public class Tester {
     public static void main(String[] args) throws Exception {
 
-	System.setProperty("java.security.policy", "resources/Test.policy");
-	if(System.getSecurityManager()==null){
-		System.setSecurityManager(new SecurityManager());
-	}
-
         System.out.println("Loading Source...");
         final String sourceCode = loadFile("resources/HelloWorld.java");
 
         System.out.println("Compiling...");
         final byte[] byteCode = Compiler.compile("HelloWorld", sourceCode);
 
+	System.setProperty("java.security.policy", "resources/Test.policy");
+	if(System.getSecurityManager()==null){
+		System.setSecurityManager(new SecurityManager());
+	}
+
         System.out.println("Setting up Classloader...");
         MyClassLoader bcl = new MyClassLoader(new HashMap<String, byte[]>() {{
             put("HelloWorld", byteCode);
         }});
 
-
         System.out.println("Executing Code...");
         System.out.println("============================================");
 
-        Object key = Account.get().push(90000, 9000000);
+        Object key = Account.get().push(90000,3000000);
 
         Class c = bcl.loadClass("HelloWorld");
         Method m = c.getMethod("main");

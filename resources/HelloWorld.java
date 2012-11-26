@@ -48,7 +48,8 @@ public class HelloWorld {
         }catch(SecurityException e){
 		System.err.println("Hmm should have been able to write to test.txt, but could not");
 	}
-	
+
+
         java.util.Date d = new Date();
 
         // this should throw an exception

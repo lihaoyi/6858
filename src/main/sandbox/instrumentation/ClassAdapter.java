@@ -47,9 +47,10 @@ class ClassAdapter extends org.objectweb.asm.ClassVisitor{
                 exceptions
         );
         JSRInlinerAdapter jia = new JSRInlinerAdapter(mv, access, base, desc, signature, exceptions);
-        return new RedirectMethodAdapter(
+	return new BytecodeMethodAdapter(new MemoryMethodAdapter(jia));
+        /*return new RedirectMethodAdapter(
                new BytecodeMethodAdapter(
-               new MemoryMethodAdapter(jia)));
+               new MemoryMethodAdapter(jia)));*/
     }
 
 }

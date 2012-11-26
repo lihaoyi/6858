@@ -1,26 +1,3 @@
 grant {
     permission java.io.FilePermission "test.txt", "write";
-    permission java.util.PropertyPermission "nonBatchMode","read";
-    permission java.util.PropertyPermission "java.endorsed.dirs","read";
-    permission java.util.PropertyPermission "java.ext.dirs","read";
-    permission java.util.PropertyPermission "sun.boot.class.path","read";
-
-
-    permission java.io.FilePermission "/usr/lib/jvm/java-7-oracle/jre/lib/-","read";
-    permission java.io.FilePermission "/usr/lib/jvm/java-7-oracle/jre/classes", "read";
-    permission java.io.FilePermission "/Runtimes/Java7/-", "read";
-    permission java.io.FilePermission "/windows/Sun/-", "read";
-    permission java.io.FilePermission "/Programs/IntelliJ/lib/-", "read";
-    permission java.io.FilePermission "-","read";
-    permission java.io.FilePermission "/usr/java/packages/lib/-","read";
-    permission java.io.FilePermission "/usr/lib/jvm/java-7-oracle/lib/-","read";
-
-
-    permission java.util.PropertyPermission "env.class.path","read";
-    permission java.util.PropertyPermission "application.home","read";
-    permission java.util.PropertyPermission "java.class.path","read";
-    permission java.util.PropertyPermission "user.dir","read";
-    permission java.lang.RuntimePermission "createClassLoader";
-    permission java.util.PropertyPermission "sun.tools.ToolProvider", "read";
-    permission java.util.PropertyPermission "java.home", "read";
 };
