@@ -17,21 +17,6 @@ public class MyClassLoader extends URLClassLoader {
         this.specialClasses = specialClasses;
     }
 
-    public Class<?> instrument(Class<?> in){
-        try{
-            if(JavaAgent.instrumentation.isModifiableClass(in)){
-                Transformer.transformMe.add(in);
-                JavaAgent.instrumentation.retransformClasses(in);
-                Transformer.transformMe.remove(in);
-                //System.out.println("Instrumented " + in.getName());
-            }else{
-                System.out.println("Cannot Instrument" + in.getName());
-            }
-
-            return in;
-        }catch(Exception e){ return in;
-        }catch(Error e){ return in;}
-    }
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
         System.out.println("Loading " + name);
@@ -40,12 +25,11 @@ public class MyClassLoader extends URLClassLoader {
         }
         if (specialClasses.containsKey(name)){
             byte[] b = specialClasses.get(name);
-            return instrument(defineClass(name, b, 0, b.length));
+            return defineClass(name, b, 0, b.length);
         }
         if (name.startsWith("sandbox")) return super.loadClass(name);
-        //if (!WhiteList.allow(name)) throw new ClassNotFoundException("Cannot load non-whitelisted class: " + name);
-        if (!name.startsWith("java") && !name.startsWith("sun")) return instrument(super.findClass(name));
-        return instrument(super.loadClass(name));
+        if (!name.startsWith("java") && !name.startsWith("sun")) return super.findClass(name);
+        return super.loadClass(name);
 
 
 
