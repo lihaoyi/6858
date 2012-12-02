@@ -28,7 +28,6 @@ public class MyClassLoader extends URLClassLoader {
             return defineClass(name, b, 0, b.length);
         }
         if (name.startsWith("sandbox")) return super.loadClass(name);
-        if (!name.startsWith("java") && !name.startsWith("sun")) return super.findClass(name);
         return super.loadClass(name);
 //        return instrument(super.loadClass(name));
     }

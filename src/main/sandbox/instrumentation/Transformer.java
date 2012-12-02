@@ -40,6 +40,7 @@ public class Transformer implements ClassFileTransformer {
         System.out.println("Transforming " + className);
         if( className.startsWith("java/lang/Shutdown") ||
             className.startsWith("java/lang/ThreadLocal") ||
+            className.startsWith("sun/security/provider/PolicyFile$PolicyEntry") ||
             className.startsWith("sandbox/")) {
             System.out.println("Skipping");
             return origBytes;
