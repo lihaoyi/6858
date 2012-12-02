@@ -13,12 +13,12 @@ import java.util.ArrayList;
  * is passed for someone else to use later
  */
 public class JavaAgent {
-
+    public static Instrumentation instrumentation;
     private JavaAgent() {}
 
     public static void premain(String agentArgs, Instrumentation inst) {
         System.out.println("Agent Premain Start");
-
+        instrumentation = inst;
         inst.addTransformer(
             new Transformer(),
             inst.isRetransformClassesSupported()

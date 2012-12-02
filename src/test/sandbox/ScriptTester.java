@@ -24,6 +24,7 @@ public class ScriptTester {
             put("Scripts", byteCode);
         }});
 
+        Account.bcl = bcl; // TODO(TFK): Remove this hack.
 
         System.out.println("Executing Code...");
         System.out.println("============================================");

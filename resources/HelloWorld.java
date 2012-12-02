@@ -37,6 +37,15 @@ public class HelloWorld {
         java.lang.reflect.Array.newInstance(Object.class, dims);
         checkIncrement(120 * 8); // sizeof(T_REF) is 8 for now.
 
+        String s = new String(); // A string has 7 fields
+        checkIncrement(7 * 8);        
+
+        StringBuilder builder = new StringBuilder(); 
+        resetIncrement(); // Reset, since we'll use bytecode to load the class.
+       
+        builder = new StringBuilder(); // A stringbuilder has 1 field
+        checkIncrement(1 * 8);
+
 	File f;
         f=new File("test.txt");
         try{
@@ -72,6 +81,11 @@ public class HelloWorld {
 
     static long runningTotal = 0;
     static String output = null;
+
+    private static void resetIncrement() {
+      runningTotal = Account.get().memory.current;
+    }
+
     /**
      * Helper method which asserts whether the expected number of bytes
      * of memory have been recorded as being allocated since the last time
