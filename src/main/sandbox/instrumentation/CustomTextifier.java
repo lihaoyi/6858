@@ -213,7 +213,7 @@ public class CustomTextifier extends Printer {
         buf.append(" {\n\n");
 
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -229,7 +229,7 @@ public class CustomTextifier extends Printer {
         }
         if (buf.length() > 0) {
             text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
         }
     }
 
@@ -246,7 +246,7 @@ public class CustomTextifier extends Printer {
         appendDescriptor(METHOD_DESCRIPTOR, desc);
         buf.append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -280,7 +280,7 @@ public class CustomTextifier extends Printer {
         appendDescriptor(INTERNAL_NAME, innerName);
         buf.append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -320,7 +320,7 @@ public class CustomTextifier extends Printer {
 
         buf.append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
 
         CustomTextifier t = createTextifier();
         text.add(t.getText());
@@ -381,7 +381,7 @@ public class CustomTextifier extends Printer {
 
         buf.append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
 
         CustomTextifier t = createTextifier();
         text.add(t.getText());
@@ -481,7 +481,7 @@ public class CustomTextifier extends Printer {
         }
 
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     private void visitInt(final int value) {
@@ -535,7 +535,7 @@ public class CustomTextifier extends Printer {
         appendDescriptor(FIELD_DESCRIPTOR, desc);
         buf.append('.').append(value);
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -549,7 +549,7 @@ public class CustomTextifier extends Printer {
         appendDescriptor(FIELD_DESCRIPTOR, desc);
         buf.append('(');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
         CustomTextifier t = createTextifier();
         text.add(t.getText());
         text.add(")");
@@ -565,7 +565,7 @@ public class CustomTextifier extends Printer {
         }
         buf.append('{');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
         CustomTextifier t = createTextifier();
         text.add(t.getText());
         text.add("}");
@@ -622,7 +622,7 @@ public class CustomTextifier extends Printer {
         appendDescriptor(FIELD_DESCRIPTOR, desc);
         buf.append('(');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
         CustomTextifier t = createTextifier();
         text.add(t.getText());
         text.add(visible ? ") // parameter " : ") // invisible, parameter ");
@@ -644,7 +644,7 @@ public class CustomTextifier extends Printer {
         }
 
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -684,7 +684,7 @@ public class CustomTextifier extends Printer {
         }
         buf.append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -692,7 +692,7 @@ public class CustomTextifier extends Printer {
         buf.setLength(0);
         buf.append(tab2).append(OPCODES[opcode]).append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -704,7 +704,7 @@ public class CustomTextifier extends Printer {
                 .append(opcode == Opcodes.NEWARRAY ? TYPES[operand] : Integer
                         .toString(operand)).append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -713,7 +713,7 @@ public class CustomTextifier extends Printer {
         buf.append(tab2).append(OPCODES[opcode]).append(' ').append(var)
                 .append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -723,7 +723,7 @@ public class CustomTextifier extends Printer {
         appendDescriptor(INTERNAL_NAME, type);
         buf.append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -736,7 +736,7 @@ public class CustomTextifier extends Printer {
         appendDescriptor(FIELD_DESCRIPTOR, desc);
         buf.append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -749,7 +749,7 @@ public class CustomTextifier extends Printer {
         appendDescriptor(METHOD_DESCRIPTOR, desc);
         buf.append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -784,7 +784,7 @@ public class CustomTextifier extends Printer {
         buf.append('\n');
         buf.append(tab2).append("]\n");
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -794,7 +794,7 @@ public class CustomTextifier extends Printer {
         appendLabel(label);
         buf.append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -804,7 +804,7 @@ public class CustomTextifier extends Printer {
         appendLabel(label);
         buf.append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -820,7 +820,7 @@ public class CustomTextifier extends Printer {
         }
         buf.append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -829,7 +829,7 @@ public class CustomTextifier extends Printer {
         buf.append(tab2).append("IINC ").append(var).append(' ')
                 .append(increment).append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -846,7 +846,7 @@ public class CustomTextifier extends Printer {
         appendLabel(dflt);
         buf.append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -863,7 +863,7 @@ public class CustomTextifier extends Printer {
         appendLabel(dflt);
         buf.append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -873,7 +873,7 @@ public class CustomTextifier extends Printer {
         appendDescriptor(FIELD_DESCRIPTOR, desc);
         buf.append(' ').append(dims).append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -890,7 +890,7 @@ public class CustomTextifier extends Printer {
         appendDescriptor(INTERNAL_NAME, type);
         buf.append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -917,7 +917,7 @@ public class CustomTextifier extends Printer {
                     .append(sv.getDeclaration()).append('\n');
         }
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -927,7 +927,7 @@ public class CustomTextifier extends Printer {
         appendLabel(start);
         buf.append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -935,12 +935,12 @@ public class CustomTextifier extends Printer {
         buf.setLength(0);
         buf.append(tab2).append("MAXSTACK = ").append(maxStack).append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
 
         buf.setLength(0);
         buf.append(tab2).append("MAXLOCALS = ").append(maxLocals).append('\n');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     @Override
@@ -966,7 +966,7 @@ public class CustomTextifier extends Printer {
         appendDescriptor(FIELD_DESCRIPTOR, desc);
         buf.append('(');
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
         CustomTextifier t = createTextifier();
         text.add(t.getText());
         text.add(visible ? ")\n" : ") // invisible\n");
@@ -991,7 +991,7 @@ public class CustomTextifier extends Printer {
         }
 
         text.add(buf.toString());
-        System.out.print(buf.toString());
+        System.err.print(buf.toString());
     }
 
     // ------------------------------------------------------------------------
