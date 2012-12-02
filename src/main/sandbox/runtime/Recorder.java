@@ -18,10 +18,14 @@ public class Recorder {
     final public static ThreadLocal<Boolean> disabled_cl = new ThreadLocal<Boolean>(){
         public Boolean initialValue(){ return false; }
     };
-    volatile public static boolean disabled_ic = false;
+    // 1000 is an arbitrary numbers; i'm using primitives here 'cuz
+    // method calls will trigger more checkInstructionCounts, causing
+    // infinite recursion
+    final public static boolean[] disabled_ic = new boolean[1000];
 
     // Checks whether we can allocate count elements of size bytes.
     public static void checkAllocation(int count, int size){
+
         try{
             if (!disabled.get()) disabled.set(true);
             else return;
@@ -79,12 +83,13 @@ public class Recorder {
 
 
     public static void checkInstructionCount(int count) {
-        if (!disabled_ic) disabled_ic = true;
+        int id = (int)Thread.currentThread().getId();
+        if (!disabled_ic[id]) disabled_ic[id] = true;
         else return;
 //        try{
             sandbox.runtime.Account.get().bytecodes.increment(count);
 //        }finally{
-            disabled_ic = false;
+        disabled_ic[id] = false;
 //        }
     }
 }
