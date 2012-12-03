@@ -69,11 +69,10 @@ public class ClassAdapter extends org.objectweb.asm.ClassVisitor{
                 signature,
                 exceptions
         );
-        JSRInlinerAdapter jia = new JSRInlinerAdapter(mv, access, base, desc, signature, exceptions);
-        return new BytecodeMethodAdapter(new MemoryMethodAdapter(new TraceMethodVisitor(jia, new CustomTextifier())));
-        /*return new RedirectMethodAdapter(
-               new BytecodeMethodAdapter(
-               new MemoryMethodAdapter(jia)));*/
-    }
 
+        String methodID = this.name + access + base + desc + signature + exceptions;
+
+        JSRInlinerAdapter jia = new JSRInlinerAdapter(mv, access, base, desc, signature, exceptions);
+        return new InstructionMethodAdapter(new MemoryMethodAdapter(new TraceMethodVisitor(jia, new CustomTextifier())), methodID);
+    }
 }
