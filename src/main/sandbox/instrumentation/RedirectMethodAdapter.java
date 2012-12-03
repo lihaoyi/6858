@@ -8,10 +8,6 @@ import org.objectweb.asm.Opcodes;
 import java.util.HashSet;
 import java.util.Set;
 
-/* TODO:
- * - decide what to do with long chains of instructions with no control transfer (e.g. check every 100 bytecodes)
- */
-
 /**
  * Method adapter meant to add instruction-counting instrumentation to the
  * processed methods
