@@ -87,7 +87,7 @@ public class Recorder {
         if (!disabled_ic[id]) disabled_ic[id] = true;
         else return;
 //        try{
-            sandbox.runtime.Account.get().bytecodes.increment(count);
+            sandbox.runtime.Account.get().instructions.increment(count);
 //        }finally{
         disabled_ic[id] = false;
 //        }
