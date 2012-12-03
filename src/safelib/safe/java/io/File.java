@@ -26,9 +26,6 @@ public class File implements Serializable, Comparable<File>{
 
     public static final String pathSeparator = java.io.File.pathSeparator;
 
-
-
-
     public File(String pathname) {
         f = new java.io.File(pathname);
     }
