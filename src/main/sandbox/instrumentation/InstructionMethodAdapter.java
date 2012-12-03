@@ -75,7 +75,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
 
     private final int LABEL_INDEX_START = -1;
     private final int LABEL_INDEX_CALL  = -2;
-    private final boolean DEBUG = false;
+    private final boolean DEBUG = true;
 
     private int icount = 0, lindex = LABEL_INDEX_START, lcount = 0;
     private HashMap<Label,Integer> labelIndices;
