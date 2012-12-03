@@ -42,7 +42,7 @@ public class Tester {
         System.out.println("Executing Code...");
         System.out.println("============================================");
 
-        Object key = Account.get().push(900000,3000000);
+        Object key = Account.get().push(5000000,50000000);
         Account.bcl = bcl; // TODO(TFK): Remove this hack.
 
         Class c = bcl.loadClass("HelloWorld");

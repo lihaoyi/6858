@@ -49,12 +49,15 @@ public class Transformer implements ClassFileTransformer {
             System.out.println("Skipping");
             return origBytes;
         }
+
+        /* First pass instrumentation */
+        instrument(origBytes, loader);
+        /* Second pass instrumentation */
         byte[] result = instrument(origBytes, loader);
         Recorder.disabled.disable();
         Recorder.disabled_cl.disable();
         Recorder.disabled_ic.disable();
         return result;
-
     }
 
     /**
