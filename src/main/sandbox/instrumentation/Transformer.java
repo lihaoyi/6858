@@ -46,8 +46,10 @@ public class Transformer implements ClassFileTransformer {
             return origBytes;
         }
 
+        /* First pass instrumentation */
+        instrument(origBytes, loader);
+        /* Second pass instrumentation */
         return instrument(origBytes, loader);
-
     }
 
     /**
