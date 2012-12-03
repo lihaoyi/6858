@@ -27,14 +27,24 @@ public class Tester {
         final byte[] byteCode = Compiler.compile("HelloWorld", sourceCode);
 
         System.out.println("Setting up Classloader...");
+
         MyClassLoader bcl = new MyClassLoader(new HashMap<String, byte[]>() {{
             put("HelloWorld", byteCode);
         }});
 
+	System.setProperty("java.security.policy", "resources/Test.policy");
+	if(System.getSecurityManager()==null){
+		System.setSecurityManager(new SecurityManager());
+	}
+
+
+
         System.out.println("Executing Code...");
         System.out.println("============================================");
 
-        Object key = Account.get().push(90000, 3000000);
+        Object key = Account.get().push(900000,3000000);
+        Account.bcl = bcl; // TODO(TFK): Remove this hack.
+
         Class c = bcl.loadClass("HelloWorld");
         Method m = c.getMethod("main");
         String result = (String) m.invoke(null);

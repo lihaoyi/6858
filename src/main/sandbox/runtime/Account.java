@@ -1,6 +1,7 @@
 package sandbox.runtime;
 
 import sandbox.runtime.Resource;
+import sandbox.classloader.MyClassLoader;
 
 import java.util.Random;
 
@@ -17,6 +18,9 @@ public class Account {
 
     final public Account parent;
     final private Object key;
+
+    // TODO(TFK): This should go into a collection of shared global state.
+    public static MyClassLoader bcl;
 
     private final static ThreadLocal<Account> current = new ThreadLocal<Account>();
     static {
@@ -47,9 +51,11 @@ public class Account {
     public Object pushMem(long subMaxMemory) throws Exception{
         return push(subMaxMemory, this.memory.max - this.memory.current);
     }
+
     public Object pushBytes(long subMaxBytecodes) throws Exception{
         return push(this.bytecodes.max - this.bytecodes.current, subMaxBytecodes);
     }
+
     public Object push(long subMaxMemory, long subMaxBytecodes){
         System.out.println("Pushing " + this);
 
@@ -72,7 +78,6 @@ public class Account {
             System.out.println("To " + parent);
         }
     }
-
 
     public static Account get(){
         return current.get();

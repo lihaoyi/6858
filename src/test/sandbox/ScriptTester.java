@@ -24,11 +24,12 @@ public class ScriptTester {
             put("Scripts", byteCode);
         }});
 
+        Account.bcl = bcl; // TODO(TFK): Remove this hack.
 
         System.out.println("Executing Code...");
         System.out.println("============================================");
 
-        Object key = Account.get().push(90000000, 100000000);
+        Object key = Account.get().push(90000, 100000000);
         Class c = bcl.loadClass("Scripts");
         Method m = c.getMethod("main");
         String result = (String) m.invoke(null);

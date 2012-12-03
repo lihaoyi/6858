@@ -26,6 +26,7 @@ public class MemoryMethodAdapter extends MethodVisitor {
 
     private final String arrayCheckerSignature = "([II)V";
 
+    private final String classCheckerSignature = "(Ljava/lang/String;)V";
     /**
      * The LocalVariablesSorter used in this adapter.  Lame that it's public but
      * the ASM architecture requires setting it from the outside after this
@@ -159,6 +160,10 @@ public class MemoryMethodAdapter extends MethodVisitor {
     public void visitTypeInsn(int opcode, String typeName) {
 
         if (opcode == Opcodes.NEW) {
+            // Check the size of the class.
+            super.visitLdcInsn(typeName);
+            super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass,
+              checkerMethod, classCheckerSignature);
             super.visitTypeInsn(opcode, typeName);
         } else if (opcode == Opcodes.ANEWARRAY) {
             // ... len

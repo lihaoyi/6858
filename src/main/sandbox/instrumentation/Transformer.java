@@ -16,20 +16,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * which can be used by the sandbox.instrumentation to transform loaded classes
  */
 public class Transformer implements ClassFileTransformer {
-    public static Set<Class<?>> transformMe = Collections.newSetFromMap(new ConcurrentHashMap<Class<?>, Boolean>());
 
     /**
      * Register the transformer with the Instrumentation object, just once,
      * when the class is initially loaded.
      */
-    static {
-        JavaAgent.instrumentation.addTransformer(
-            new Transformer(),
-            JavaAgent.instrumentation.isRetransformClassesSupported()
-        );
-    }
 
-    private Transformer() {}
+
+    public Transformer() {}
 
     @Override
     public byte[] transform(ClassLoader loader,
@@ -43,11 +37,17 @@ public class Transformer implements ClassFileTransformer {
          * Not sure why all these guys need to be skipped, but they cause
          * red words to appear if they're not. Ideally we would figure out why.
          */
-        if (!transformMe.contains(cls)) {
-            return null;
-        } else {
-            return instrument(origBytes, loader);
+        System.out.println("Transforming " + className);
+        if( className.startsWith("java/lang/Shutdown") ||
+            className.startsWith("java/lang/Thread") ||
+            className.startsWith("sun/security/provider/PolicyFile$PolicyEntry") ||
+            className.startsWith("sandbox/")) {
+            System.out.println("Skipping");
+            return origBytes;
         }
+
+        return instrument(origBytes, loader);
+
     }
 
     /**
