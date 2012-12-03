@@ -14,7 +14,7 @@ import java.util.Random;
 public class Account {
 
     final public Resource memory;
-    final public Resource bytecodes;
+    final public Resource instructions;
 
     final public Account parent;
     final private Object key;
@@ -31,18 +31,18 @@ public class Account {
 
     private Account(){
         memory = new sandbox.runtime.Resource("Memory");
-        bytecodes = new Resource("Bytecodes");
+        instructions = new Resource("Instructions");
         this.parent = null;
         this.key = new Object();
     }
 
     private Account(long maxMemory,
-                    long maxBytecodes,
+                    long maxInstructions,
 
                     Account parent){
 
         memory = parent.memory.fork(maxMemory);
-        bytecodes = parent.bytecodes.fork(maxBytecodes);
+        instructions = parent.instructions.fork(maxInstructions);
 
         this.parent = parent;
         this.key = new Object();
@@ -52,14 +52,14 @@ public class Account {
         return push(subMaxMemory, this.memory.max - this.memory.current);
     }
 
-    public Object pushBytes(long subMaxBytecodes) throws Exception{
-        return push(this.bytecodes.max - this.bytecodes.current, subMaxBytecodes);
+    public Object pushBytes(long subMaxInstructions) throws Exception{
+        return push(this.instructions.max - this.instructions.current, subMaxInstructions);
     }
 
-    public Object push(long subMaxMemory, long subMaxBytecodes){
+    public Object push(long subMaxMemory, long subMaxInstructions){
         System.out.println("Pushing " + this);
 
-        Account newAccount = new Account(subMaxMemory, subMaxBytecodes, this);
+        Account newAccount = new Account(subMaxMemory, subMaxInstructions, this);
         current.set(newAccount);
 
         System.out.println("Pushed " + newAccount);
@@ -72,7 +72,7 @@ public class Account {
             System.out.println("Popping From " + this);
 
             parent.memory.join(memory);
-            parent.bytecodes.join(bytecodes);
+            parent.instructions.join(instructions);
 
             current.set(this.parent);
             System.out.println("To " + parent);
@@ -84,7 +84,7 @@ public class Account {
     }
 
     public String toString(){
-        return "Account " + key + "\n" + memory + "\n" + bytecodes;
+        return "Account " + key + "\n" + memory + "\n" + instructions;
     }
 
 }

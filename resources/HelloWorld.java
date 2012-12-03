@@ -94,7 +94,7 @@ public class HelloWorld {
         checkIncrement(7 * 8);        
 
         StringBuilder builder = new StringBuilder(); 
-        resetIncrement(); // Reset, since we'll use bytecode to load the class.
+        resetIncrement(); // Reset, since we'll use instructions to load the class.
        
         builder = new StringBuilder(); // A stringbuilder has 1 field
         checkIncrement(1 * 8);
