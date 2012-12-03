@@ -17,9 +17,10 @@ public class WhiteList {
     public static boolean allow(String s){
         s = s.replace('/', '.');
         return !list.validate(s);
-
     }
+
     private static Rule list;
+
     static{
         Path p = Paths.get("resources/list.txt");
         try{

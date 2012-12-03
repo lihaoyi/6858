@@ -5,6 +5,7 @@ import sandbox.instrumentation.ClassAdapter;
 import sandbox.instrumentation.Transformer;
 import java.util.HashMap;
 
+
 /**
  * Runtime target for the instrumented bytecode to hit, by providing two
  * `checkAllocation` methods as targets which immediately delegate to the
@@ -12,39 +13,31 @@ import java.util.HashMap;
  */
 public class Recorder {
 
-    final public static ThreadLocal<Boolean> disabled = new ThreadLocal<Boolean>(){
-        public Boolean initialValue(){ return false; }
-    };
-    final public static ThreadLocal<Boolean> disabled_cl = new ThreadLocal<Boolean>(){
-        public Boolean initialValue(){ return false; }
-    };
-    // 1000 is an arbitrary numbers; i'm using primitives here 'cuz
-    // method calls will trigger more checkInstructionCounts, causing
-    // infinite recursion
-    final public static boolean[] disabled_ic = new boolean[1000];
+    final public static GhettoThreadLocal disabled  = new GhettoThreadLocal();
+    final public static GhettoThreadLocal disabled_cl  = new GhettoThreadLocal();
+
+    final public static GhettoThreadLocal disabled_ic = new GhettoThreadLocal();
 
     // Checks whether we can allocate count elements of size bytes.
     public static void checkAllocation(int count, int size){
 
-        try{
-            if (!disabled.get()) disabled.set(true);
-            else return;
 
-            // Print statements for debugging.
-            // System.out.println("Printing the count:" + count);
-            // System.out.println("Printing the type:" + type);
-            sandbox.runtime.Account.get().memory.increment(count * size);
-        }finally{
-            disabled.set(false);
-        }
+        if (!disabled.check()) disabled.enable();
+        else return;
+
+        // Print statements for debugging.
+        // System.out.println("Printing the count:" + count);
+        // System.out.println("Printing the type:" + type);
+        sandbox.runtime.Account.get().memory.increment(count * size);
+
     }
 
     public static void checkAllocation(String className) {
 
-      if (!disabled_cl.get()) disabled_cl.set(true);
+      if (!disabled_cl.check()) disabled_cl.enable();
       else return;
 
-//        try{
+
               if (!ClassAdapter.fieldCountMap.containsKey(className)) {
                 try {
                   if (sandbox.runtime.Account.bcl == null) {
@@ -66,30 +59,21 @@ public class Recorder {
                 fieldCount = ClassAdapter.fieldCountMap.get(className);
               }
               sandbox.runtime.Account.get().memory.increment(fieldCount * 8);
-//        }finally{
-            disabled_cl.set(false);
-//        }
+            disabled_cl.disable();
     }
 
     public static void checkAllocation(int[] counts, int size){
-        if (!disabled.get()) disabled.set(true);
+        if (!disabled.check()) disabled.enable();
         else return;
-//        try{
-            sandbox.runtime.Account.get().memory.increment(counts, size);
-//        }finally{
-            disabled.set(false);
-//        }
+        sandbox.runtime.Account.get().memory.increment(counts, size);
+        disabled.disable();
     }
 
 
     public static void checkInstructionCount(int count) {
-        int id = (int)Thread.currentThread().getId();
-        if (!disabled_ic[id]) disabled_ic[id] = true;
+        if (!disabled_ic.check()) disabled_ic.enable();
         else return;
-//        try{
-            sandbox.runtime.Account.get().instructions.increment(count);
-//        }finally{
-        disabled_ic[id] = false;
-//        }
+            Account.get().instructions.increment(count);
+        disabled_ic.disable();
     }
 }

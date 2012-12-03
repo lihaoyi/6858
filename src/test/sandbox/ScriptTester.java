@@ -29,7 +29,7 @@ public class ScriptTester {
         System.out.println("Executing Code...");
         System.out.println("============================================");
 
-        Object key = Account.get().push(90000, 100000000);
+        Object key = Account.get().push(900000, 100000000);
         Class c = bcl.loadClass("Scripts");
         Method m = c.getMethod("main");
         String result = (String) m.invoke(null);

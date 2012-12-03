@@ -3,6 +3,7 @@ package sandbox.instrumentation;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import sandbox.agent.JavaAgent;
+import sandbox.runtime.Recorder;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
@@ -31,6 +32,9 @@ public class Transformer implements ClassFileTransformer {
                             Class<?> cls,
                             ProtectionDomain protectionDomain,
                             byte[] origBytes) {
+        Recorder.disabled.enable();
+        Recorder.disabled_cl.enable();
+        Recorder.disabled_ic.enable();
         /**
          * Skip instrumenting classes which cause problems.
          *
@@ -49,7 +53,11 @@ public class Transformer implements ClassFileTransformer {
         /* First pass instrumentation */
         instrument(origBytes, loader);
         /* Second pass instrumentation */
-        return instrument(origBytes, loader);
+        byte[] result = instrument(origBytes, loader);
+        Recorder.disabled.disable();
+        Recorder.disabled_cl.disable();
+        Recorder.disabled_ic.disable();
+        return result;
     }
 
     /**

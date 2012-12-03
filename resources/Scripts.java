@@ -29,7 +29,7 @@ public class Scripts {
         ScriptEngine engine = engineMgr.getEngineByName("JavaScript");
         Bindings bindings = engine.createBindings();
 
-        String script = "(function(){var y = [1, 2, 3, 4, 5]; var x = 0; while(x < 10000){x++;}; return cow + moo})()";
+        String script = "(function(){var y = [1, 2, 3, 4, 5]; var x = 0; while(x < 1000000){y.push(1);}; return cow + moo})()";
         bindings.put("cow", 10);
         bindings.put("moo", 20);
 
