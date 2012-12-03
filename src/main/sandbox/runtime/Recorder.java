@@ -73,7 +73,7 @@ public class Recorder {
     public static void checkInstructionCount(int count) {
         if (!disabled_ic.check()) disabled_ic.enable();
         else return;
-            sandbox.runtime.Account.get().bytecodes.increment(count);
+            Account.get().instructions.increment(count);
         disabled_ic.disable();
     }
 }
