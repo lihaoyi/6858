@@ -14,19 +14,20 @@ public class WhiteList {
      * Checks whether the name of a class is allowed by seeing if it has a prefix
      * which exists in the private blacklist.
      */
-    public static boolean allow(String s){
+    public static boolean allow(String s) {
         s = s.replace('/', '.');
         return !list.validate(s);
     }
 
     private static Rule list;
 
-    static{
+    static {
         Path p = Paths.get("resources/list.txt");
-        try{
+        try {
             List<String> lines = Files.readAllLines(p, StandardCharsets.UTF_8);
             list = new Rule("-", lines);
-        }catch(Exception e){}
+        } catch (Exception e) {
+        }
     }
 
 }

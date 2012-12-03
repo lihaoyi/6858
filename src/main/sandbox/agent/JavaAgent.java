@@ -1,4 +1,3 @@
-
 package sandbox.agent;
 
 import sandbox.instrumentation.Transformer;
@@ -14,14 +13,16 @@ import java.util.ArrayList;
  */
 public class JavaAgent {
     public static Instrumentation instrumentation;
-    private JavaAgent() {}
+
+    private JavaAgent() {
+    }
 
     public static void premain(String agentArgs, Instrumentation inst) {
         System.out.println("Agent Premain Start");
         instrumentation = inst;
         inst.addTransformer(
-            new Transformer(),
-            inst.isRetransformClassesSupported()
+                new Transformer(),
+                inst.isRetransformClassesSupported()
         );
 //        Class<?>[] classes = inst.getAllLoadedClasses();
 //        ArrayList<Class<?>> classList = new ArrayList<Class<?>>();

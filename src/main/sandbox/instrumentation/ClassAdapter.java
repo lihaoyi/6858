@@ -13,9 +13,10 @@ import java.util.HashMap;
  * In charge of instrumenting an entire class. Does nothing but hand off the
  * instrumenting of individual methods to MemoryMethodAdapter objects
  */
-public class ClassAdapter extends org.objectweb.asm.ClassVisitor{
+public class ClassAdapter extends org.objectweb.asm.ClassVisitor {
     public static Map<String, Integer> fieldCountMap;
     ClassWriter cw;
+
     public ClassAdapter(ClassWriter cw) {
         super(Opcodes.ASM4, cw);
         this.cw = cw;
@@ -25,6 +26,7 @@ public class ClassAdapter extends org.objectweb.asm.ClassVisitor{
     }
 
     String name;
+
     @Override
     public void visit(
             int version,
@@ -32,7 +34,7 @@ public class ClassAdapter extends org.objectweb.asm.ClassVisitor{
             String name,
             String signature,
             String superName,
-            String[] interfaces){
+            String[] interfaces) {
 
         this.name = name;
 
@@ -41,17 +43,17 @@ public class ClassAdapter extends org.objectweb.asm.ClassVisitor{
     }
 
     @Override
-    public FieldVisitor visitField (int access, String name, String desc,
-        String signature, Object value) {
-      //System.out.println("TFK: visiting field of class: name: " + name + 
-      //    "desc: "+desc+ " signature " + signature);
-      // Increment this class's field count.
-      if (!fieldCountMap.containsKey(this.name)) {
-        fieldCountMap.put(this.name, 0);
-      }
-      // TODO(TFK): Take into account type of field, if necessary.
-      fieldCountMap.put(this.name, fieldCountMap.get(this.name) + 1);
-      return super.visitField(access, name, desc, signature, value);
+    public FieldVisitor visitField(int access, String name, String desc,
+                                   String signature, Object value) {
+        //System.out.println("TFK: visiting field of class: name: " + name +
+        //    "desc: "+desc+ " signature " + signature);
+        // Increment this class's field count.
+        if (!fieldCountMap.containsKey(this.name)) {
+            fieldCountMap.put(this.name, 0);
+        }
+        // TODO(TFK): Take into account type of field, if necessary.
+        fieldCountMap.put(this.name, fieldCountMap.get(this.name) + 1);
+        return super.visitField(access, name, desc, signature, value);
     }
 
     @Override
@@ -63,7 +65,7 @@ public class ClassAdapter extends org.objectweb.asm.ClassVisitor{
 
 
         MethodVisitor mv = cv.visitMethod(
-                access ,
+                access,
                 base,
                 desc,
                 signature,
@@ -73,7 +75,8 @@ public class ClassAdapter extends org.objectweb.asm.ClassVisitor{
         String methodID = this.name + access + base + desc + signature + exceptions;
 
         JSRInlinerAdapter jia = new JSRInlinerAdapter(mv, access, base, desc, signature, exceptions);
-        return new InstructionMethodAdapter(new MemoryMethodAdapter(new TraceMethodVisitor(jia, new CustomTextifier())), methodID);
+        //return new InstructionMethodAdapter(new MemoryMethodAdapter(new TraceMethodVisitor(jia, new CustomTextifier())), methodID);
+        return new InstructionMethodAdapter(new MemoryMethodAdapter(jia), methodID);
         /*return new RedirectMethodAdapter(new InstructionMethodAdapter(new MemoryMethodAdapter(jia), methodID));*/
     }
 }

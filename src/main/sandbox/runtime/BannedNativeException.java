@@ -5,7 +5,7 @@ package sandbox.runtime;
  * prohibited native method call.
  */
 public class BannedNativeException extends RuntimeException {
-    public BannedNativeException(String msg){
+    public BannedNativeException(String msg) {
         super(msg);
     }
 }

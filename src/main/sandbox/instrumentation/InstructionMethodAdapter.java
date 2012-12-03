@@ -61,7 +61,7 @@ class BasicBlocksRecord {
 /**
  * Method adapter meant to add instruction-counting instrumentation to the
  * processed methods
- *
+ * <p/>
  * First pass builds basic block record, second pass instruments.
  */
 public class InstructionMethodAdapter extends MethodVisitor {
@@ -70,23 +70,23 @@ public class InstructionMethodAdapter extends MethodVisitor {
     private final String checkerMethod = "checkInstructionCount";
     private final String checkerSignature = "(I)V";
 
-    private static HashMap<String,BasicBlocksRecord> MethodBasicBlocks = null;
+    private static HashMap<String, BasicBlocksRecord> MethodBasicBlocks = null;
     private boolean secondPass;
 
     private final int LABEL_INDEX_START = -1;
-    private final int LABEL_INDEX_CALL  = -2;
-    private final boolean DEBUG = true;
+    private final int LABEL_INDEX_CALL = -2;
+    private final boolean DEBUG = false;
 
     private int icount = 0, lindex = LABEL_INDEX_START, lcount = 0;
-    private HashMap<Label,Integer> labelIndices;
+    private HashMap<Label, Integer> labelIndices;
     private BasicBlocksRecord bbr;
 
     public InstructionMethodAdapter(MethodVisitor methodVisitor, String methodID) {
         super(Opcodes.ASM4, methodVisitor);
-        labelIndices = new HashMap<Label,Integer>();
+        labelIndices = new HashMap<Label, Integer>();
 
         if (MethodBasicBlocks == null) {
-            MethodBasicBlocks = new HashMap<String,BasicBlocksRecord>();
+            MethodBasicBlocks = new HashMap<String, BasicBlocksRecord>();
         }
 
         if (MethodBasicBlocks.containsKey(methodID)) {
@@ -177,15 +177,15 @@ public class InstructionMethodAdapter extends MethodVisitor {
         icount += 1;
         /* Control flow change */
         if (opcode == Opcodes.IRETURN || opcode == Opcodes.LRETURN ||
-            opcode == Opcodes.FRETURN || opcode == Opcodes.DRETURN ||
-            opcode == Opcodes.ARETURN || opcode == Opcodes.RETURN) {
+                opcode == Opcodes.FRETURN || opcode == Opcodes.DRETURN ||
+                opcode == Opcodes.ARETURN || opcode == Opcodes.RETURN) {
             recordBasicBlock(LABEL_INDEX_CALL);
         }
         mv.visitInsn(opcode);
 
         if (opcode == Opcodes.IRETURN || opcode == Opcodes.LRETURN ||
-            opcode == Opcodes.FRETURN || opcode == Opcodes.DRETURN ||
-            opcode == Opcodes.ARETURN || opcode == Opcodes.RETURN) {
+                opcode == Opcodes.FRETURN || opcode == Opcodes.DRETURN ||
+                opcode == Opcodes.ARETURN || opcode == Opcodes.RETURN) {
             insertBasicBlockCheck(LABEL_INDEX_CALL);
         }
     }
@@ -221,7 +221,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
 
     @Override
     public void visitFieldInsn(final int opcode, final String owner,
-            final String name, final String desc) {
+                               final String name, final String desc) {
         /* Count the instruction */
         icount += 1;
         mv.visitFieldInsn(opcode, owner, name, desc);
@@ -229,7 +229,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
 
     @Override
     public void visitMethodInsn(final int opcode, final String owner,
-            final String name, final String desc) {
+                                final String name, final String desc) {
         /* Count the instruction */
         icount += 1;
 
@@ -243,7 +243,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
 
     @Override
     public void visitInvokeDynamicInsn(String name, String desc, Handle bsm,
-            Object... bsmArgs) {
+                                       Object... bsmArgs) {
         /* Count the instruction */
         icount += 1;
 
@@ -303,7 +303,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
 
     @Override
     public void visitTableSwitchInsn(final int min, final int max,
-            final Label dflt, final Label... labels) {
+                                     final Label dflt, final Label... labels) {
         /* Count the instruction */
         icount += 1;
 
@@ -323,7 +323,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
 
     @Override
     public void visitLookupSwitchInsn(final Label dflt, final int[] keys,
-            final Label[] labels) {
+                                      final Label[] labels) {
         /* Count the instruction */
         icount += 1;
 

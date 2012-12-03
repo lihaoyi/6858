@@ -13,17 +13,17 @@ public class MyClassLoader extends URLClassLoader {
 
     public MyClassLoader(Map<String, byte[]> specialClasses) {
 
-        super(((URLClassLoader)ClassLoader.getSystemClassLoader()).getURLs());
+        super(((URLClassLoader) ClassLoader.getSystemClassLoader()).getURLs());
         this.specialClasses = specialClasses;
     }
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
         System.out.println("Loading " + name);
-        if(this.findLoadedClass(name) != null){
+        if (this.findLoadedClass(name) != null) {
             return this.findLoadedClass(name);
         }
-        if (specialClasses.containsKey(name)){
+        if (specialClasses.containsKey(name)) {
             byte[] b = specialClasses.get(name);
             return defineClass(name, b, 0, b.length);
         }
@@ -33,25 +33,28 @@ public class MyClassLoader extends URLClassLoader {
     }
 
     // Used by loadClassForAnalysis
-    public Class<?> instrument(Class<?> in){
-        try{
-            if(JavaAgent.instrumentation.isModifiableClass(in)){
+    public Class<?> instrument(Class<?> in) {
+        try {
+            if (JavaAgent.instrumentation.isModifiableClass(in)) {
                 JavaAgent.instrumentation.retransformClasses(in);
-            }else{
+            } else {
                 System.out.println("Cannot Instrument" + in.getName());
             }
             return in;
-        }catch(Exception e){ return in;
-        }catch(Error e){ return in;}
+        } catch (Exception e) {
+            return in;
+        } catch (Error e) {
+            return in;
+        }
     }
 
     // This is currently a hack to call the ClassAdapter on the bytecode of a class being
     //  loaded at runtime. TODO(TFK): Clean this up to do minimal work.
     public Class<?> loadClassForAnalysis(String name) throws ClassNotFoundException {
-        if(this.findLoadedClass(name) != null){
+        if (this.findLoadedClass(name) != null) {
             return this.findLoadedClass(name);
         }
-        if (specialClasses.containsKey(name)){
+        if (specialClasses.containsKey(name)) {
             byte[] b = specialClasses.get(name);
             return instrument(defineClass(name, b, 0, b.length));
         }

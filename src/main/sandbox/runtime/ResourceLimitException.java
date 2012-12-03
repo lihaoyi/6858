@@ -5,7 +5,7 @@ package sandbox.runtime;
  * has been exceeded
  */
 public class ResourceLimitException extends RuntimeException {
-    public ResourceLimitException(String msg){
+    public ResourceLimitException(String msg) {
         super(msg);
     }
 }

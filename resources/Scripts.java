@@ -16,7 +16,7 @@ import java.util.jar.Attributes;
  * doesn't quite do the math properly.
  */
 public class Scripts {
-    public static String main() throws Exception{
+    public static String main() throws Exception {
 
 //        PythonInterpreter p = new PythonInterpreter();
 //        p.exec("x = 10");

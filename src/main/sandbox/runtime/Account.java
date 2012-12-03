@@ -23,13 +23,15 @@ public class Account {
     public static MyClassLoader bcl;
 
     private final static ThreadLocal<Account> current = new ThreadLocal<Account>();
+
     static {
         current.set(new Account());
-    };
+    }
+
+    ;
 
 
-
-    private Account(){
+    private Account() {
         memory = new sandbox.runtime.Resource("Memory");
         instructions = new Resource("Instructions");
         this.parent = null;
@@ -39,7 +41,7 @@ public class Account {
     private Account(long maxMemory,
                     long maxInstructions,
 
-                    Account parent){
+                    Account parent) {
 
         memory = parent.memory.fork(maxMemory);
         instructions = parent.instructions.fork(maxInstructions);
@@ -48,15 +50,15 @@ public class Account {
         this.key = new Object();
     }
 
-    public Object pushMem(long subMaxMemory) throws Exception{
+    public Object pushMem(long subMaxMemory) throws Exception {
         return push(subMaxMemory, this.memory.max - this.memory.current);
     }
 
-    public Object pushBytes(long subMaxInstructions) throws Exception{
+    public Object pushBytes(long subMaxInstructions) throws Exception {
         return push(this.instructions.max - this.instructions.current, subMaxInstructions);
     }
 
-    public Object push(long subMaxMemory, long subMaxInstructions){
+    public Object push(long subMaxMemory, long subMaxInstructions) {
         System.out.println("Pushing " + this);
 
         Account newAccount = new Account(subMaxMemory, subMaxInstructions, this);
@@ -66,9 +68,9 @@ public class Account {
         return newAccount.key;
     }
 
-    public void pop(Object possibleKey) throws Exception{
+    public void pop(Object possibleKey) throws Exception {
 
-        if (possibleKey == key){
+        if (possibleKey == key) {
             System.out.println("Popping From " + this);
 
             parent.memory.join(memory);
@@ -79,11 +81,11 @@ public class Account {
         }
     }
 
-    public static Account get(){
+    public static Account get() {
         return current.get();
     }
 
-    public String toString(){
+    public String toString() {
         return "Account " + key + "\n" + memory + "\n" + instructions;
     }
 

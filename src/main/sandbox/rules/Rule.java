@@ -11,48 +11,51 @@ import java.util.Set;
 public class Rule {
     private String prefix;
     private Set<Rule> children = new HashSet<>();
-    public Rule(String prefix, List<String> src){
+
+    public Rule(String prefix, List<String> src) {
         this.prefix = prefix;
 
-        if(src.size() > 0){
+        if (src.size() > 0) {
             int start = 0;
-            for(int i = 1; i < src.size(); i++){
-                if(src.get(start).lastIndexOf(" ") < src.get(i).lastIndexOf(" ")){
+            for (int i = 1; i < src.size(); i++) {
+                if (src.get(start).lastIndexOf(" ") < src.get(i).lastIndexOf(" ")) {
                     continue;
                 } else {
-                    children.add(new Rule(src.get(start).trim(), src.subList(start+1, i)));
+                    children.add(new Rule(src.get(start).trim(), src.subList(start + 1, i)));
                     start = i;
                 }
             }
-            children.add(new Rule(src.get(start).trim(), src.subList(start+1, src.size())));
+            children.add(new Rule(src.get(start).trim(), src.subList(start + 1, src.size())));
         }
     }
 
-    public boolean validate(String input){
-        if (input.startsWith(prefix.substring(1))){
+    public boolean validate(String input) {
+        if (input.startsWith(prefix.substring(1))) {
 
-            String suffix = input.substring(prefix.length()-1);
-            for (Rule child : children){
-                if (child.validate(suffix)){
+            String suffix = input.substring(prefix.length() - 1);
+            for (Rule child : children) {
+                if (child.validate(suffix)) {
                     return false;
                 }
             }
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    public String toString(){
+
+    public String toString() {
         return toString(0);
     }
-    public String toString(int n){
+
+    public String toString(int n) {
         String s = "";
-        for(int i = 0; i < n; i++){
+        for (int i = 0; i < n; i++) {
             s = s + "    ";
         }
         s = s + prefix;
-        for(Rule child: children){
-            s = s + "\n" + child.toString(n+1);
+        for (Rule child : children) {
+            s = s + "\n" + child.toString(n + 1);
         }
         return s;
     }

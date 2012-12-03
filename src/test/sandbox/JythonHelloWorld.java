@@ -4,7 +4,7 @@ import org.python.util.PythonInterpreter;
 import org.python.core.*;
 
 public class JythonHelloWorld {
-    public static void main(String[] args)throws PyException{
+    public static void main(String[] args) throws PyException {
         PythonInterpreter interp = new PythonInterpreter();
 
         System.out.println("Hello, brave new world");
@@ -16,7 +16,7 @@ public class JythonHelloWorld {
         interp.exec("x = 2+2");
         PyObject x = interp.get("x");
 
-        System.out.println("x: "+x);
+        System.out.println("x: " + x);
         System.out.println("Goodbye, cruel world");
     }
 }

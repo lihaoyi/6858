@@ -16,7 +16,7 @@ public final class System {
     public final static PrintStream out = null;
 
     public final static PrintStream err = null;
-    
+
     public static void setIn(InputStream in) {
         java.lang.System.setIn(in);
     }
@@ -28,22 +28,22 @@ public final class System {
     public static void setErr(PrintStream err) {
         java.lang.System.setErr(err);
     }
-    
+
     public static Console console() {
         return java.lang.System.console();
     }
 
-    
+
     public static Channel inheritedChannel() throws IOException {
         return java.lang.System.inheritedChannel();
     }
 
-    
+
     public static void setSecurityManager(final SecurityManager s) {
         java.lang.System.setSecurityManager(s);
     }
 
-    
+
     public static SecurityManager getSecurityManager() {
         return java.lang.System.getSecurityManager();
     }
@@ -55,31 +55,31 @@ public final class System {
     public static long nanoTime() {
         return java.lang.System.nanoTime();
     }
-    
-    public static void arraycopy(Object src,  int  srcPos,
-                                        Object dest, int destPos,
-                                        int length){
+
+    public static void arraycopy(Object src, int srcPos,
+                                 Object dest, int destPos,
+                                 int length) {
         java.lang.System.arraycopy(src, srcPos, dest, destPos, length);
     }
 
-    public static int identityHashCode(Object x){
+    public static int identityHashCode(Object x) {
         return java.lang.System.identityHashCode(x);
     }
-    
+
     public static Properties getProperties() {
         return java.lang.System.getProperties();
     }
-    
+
     public static String lineSeparator() {
         return java.lang.System.lineSeparator();
     }
 
-    
+
     public static void setProperties(Properties props) {
         java.lang.System.setProperties(props);
     }
 
-    
+
     public static String getProperty(String key) {
         return java.lang.System.getProperty(key);
     }
@@ -95,12 +95,12 @@ public final class System {
     public static String clearProperty(String key) {
         return java.lang.System.clearProperty(key);
     }
-    
+
     public static String getenv(String name) {
         return java.lang.System.getenv(name);
     }
-    
-    public static java.util.Map<String,String> getenv() {
+
+    public static java.util.Map<String, String> getenv() {
         return java.lang.System.getenv();
     }
 
@@ -111,7 +111,7 @@ public final class System {
     public static void gc() {
         java.lang.System.gc();
     }
-    
+
     public static void runFinalization() {
         java.lang.System.runFinalization();
     }
@@ -129,7 +129,7 @@ public final class System {
         java.lang.System.loadLibrary(libname);
     }
 
-    public static String mapLibraryName(String libname){
+    public static String mapLibraryName(String libname) {
         return java.lang.System.mapLibraryName(libname);
     }
 

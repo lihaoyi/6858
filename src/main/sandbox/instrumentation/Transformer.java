@@ -24,7 +24,8 @@ public class Transformer implements ClassFileTransformer {
      */
 
 
-    public Transformer() {}
+    public Transformer() {
+    }
 
     @Override
     public byte[] transform(ClassLoader loader,
@@ -42,10 +43,10 @@ public class Transformer implements ClassFileTransformer {
          * red words to appear if they're not. Ideally we would figure out why.
          */
         System.out.println("Transforming " + className);
-        if( className.startsWith("java/lang/Shutdown") ||
-            className.startsWith("java/lang/Thread") ||
-            className.startsWith("sun/security/provider/PolicyFile$PolicyEntry") ||
-            className.startsWith("sandbox/")) {
+        if (className.startsWith("java/lang/Shutdown") ||
+                className.startsWith("java/lang/Thread") ||
+                className.startsWith("sun/security/provider/PolicyFile$PolicyEntry") ||
+                className.startsWith("sandbox/")) {
             System.out.println("Skipping");
             return origBytes;
         }

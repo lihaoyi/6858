@@ -1,5 +1,3 @@
-
-
 package safe.java.io;
 
 import java.io.FileFilter;
@@ -14,7 +12,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Path;
 
 
-public class File implements Serializable, Comparable<File>{
+public class File implements Serializable, Comparable<File> {
 
     java.io.File f;
 
@@ -31,10 +29,10 @@ public class File implements Serializable, Comparable<File>{
     }
 
 
-
-    private File(java.io.File f){
+    private File(java.io.File f) {
         this.f = f;
     }
+
     public File(String parent, String child) {
         f = new java.io.File(parent, child);
     }
@@ -45,88 +43,129 @@ public class File implements Serializable, Comparable<File>{
     }
 
 
+    public String getName() {
+        return f.getName();
+    }
 
 
-
-    public String getName() { return f.getName(); }
-
-
-    public String getParent() { return f.getParent(); }
+    public String getParent() {
+        return f.getParent();
+    }
 
 
-    public File getParentFile() { return new File(f.getParentFile()); }
+    public File getParentFile() {
+        return new File(f.getParentFile());
+    }
 
 
-    public String getPath() { return f.getPath(); }
+    public String getPath() {
+        return f.getPath();
+    }
 
 
+    public boolean isAbsolute() {
+        return f.isAbsolute();
+    }
 
 
-
-    public boolean isAbsolute() { return f.isAbsolute(); }
-
-
-    public String getAbsolutePath() { return f.getAbsolutePath(); }
+    public String getAbsolutePath() {
+        return f.getAbsolutePath();
+    }
 
 
-    public java.io.File getAbsoluteFile() { return f.getAbsoluteFile(); }
+    public java.io.File getAbsoluteFile() {
+        return f.getAbsoluteFile();
+    }
 
 
-    public String getCanonicalPath() throws IOException { return f.getCanonicalPath(); }
+    public String getCanonicalPath() throws IOException {
+        return f.getCanonicalPath();
+    }
 
 
-    public java.io.File getCanonicalFile() throws IOException { return f.getCanonicalFile(); }
-
+    public java.io.File getCanonicalFile() throws IOException {
+        return f.getCanonicalFile();
+    }
 
 
     @Deprecated
-    public URL toURL() throws MalformedURLException { return f.toURL(); }
+    public URL toURL() throws MalformedURLException {
+        return f.toURL();
+    }
 
 
-    public URI toURI() { return f.toURI(); }
+    public URI toURI() {
+        return f.toURI();
+    }
 
-    public boolean canRead() { return f.canRead(); }
-
-
-    public boolean canWrite() { return f.canWrite(); }
-
-
-    public boolean exists() { return f.exists(); }
+    public boolean canRead() {
+        return f.canRead();
+    }
 
 
-    public boolean isDirectory() { return f.isDirectory(); }
+    public boolean canWrite() {
+        return f.canWrite();
+    }
 
 
-    public boolean isFile() { return f.isFile(); }
+    public boolean exists() {
+        return f.exists();
+    }
 
 
-    public boolean isHidden() { return f.isHidden(); }
+    public boolean isDirectory() {
+        return f.isDirectory();
+    }
 
 
-    public long lastModified() { return f.lastModified(); }
+    public boolean isFile() {
+        return f.isFile();
+    }
 
 
-    public long length() { return f.length(); }
-
-    public boolean createNewFile() throws IOException { return f.createNewFile(); }
-
-
-    public boolean delete() { return f.delete(); }
+    public boolean isHidden() {
+        return f.isHidden();
+    }
 
 
-    public void deleteOnExit() { f.deleteOnExit(); }
+    public long lastModified() {
+        return f.lastModified();
+    }
 
 
-    public String[] list() { return f.list(); }
+    public long length() {
+        return f.length();
+    }
+
+    public boolean createNewFile() throws IOException {
+        return f.createNewFile();
+    }
 
 
-    public String[] list(FilenameFilter filter) { return f.list(filter); }
+    public boolean delete() {
+        return f.delete();
+    }
+
+
+    public void deleteOnExit() {
+        f.deleteOnExit();
+    }
+
+
+    public String[] list() {
+        return f.list();
+    }
+
+
+    public String[] list(FilenameFilter filter) {
+        return f.list(filter);
+    }
 
 
     public File[] listFiles() {
         java.io.File[] fs = f.listFiles();
         File[] sfs = new File[fs.length];
-        for(int i = 0; i < fs.length; i++) sfs[i] = new File(fs[i]);
+        for (int i = 0; i < fs.length; i++) sfs[i] = new File(fs[i]);
         return sfs;
     }
 
@@ -134,7 +173,7 @@ public class File implements Serializable, Comparable<File>{
     public File[] listFiles(FilenameFilter filter) {
         java.io.File[] fs = f.listFiles(filter);
         File[] sfs = new File[fs.length];
-        for(int i = 0; i < fs.length; i++) sfs[i] = new File(fs[i]);
+        for (int i = 0; i < fs.length; i++) sfs[i] = new File(fs[i]);
         return sfs;
     }
 
@@ -142,93 +181,123 @@ public class File implements Serializable, Comparable<File>{
     public File[] listFiles(FileFilter filter) {
         java.io.File[] fs = f.listFiles(filter);
         File[] sfs = new File[fs.length];
-        for(int i = 0; i < fs.length; i++) sfs[i] = new File(fs[i]);
+        for (int i = 0; i < fs.length; i++) sfs[i] = new File(fs[i]);
         return sfs;
     }
 
 
-    public boolean mkdir() { return f.mkdir(); }
+    public boolean mkdir() {
+        return f.mkdir();
+    }
 
 
-    public boolean mkdirs() { return mkdirs(); }
+    public boolean mkdirs() {
+        return mkdirs();
+    }
 
 
-    public boolean renameTo(File dest) { return f.renameTo(dest.f); }
+    public boolean renameTo(File dest) {
+        return f.renameTo(dest.f);
+    }
 
 
-    public boolean setLastModified(long time) {return f.setLastModified(time); }
+    public boolean setLastModified(long time) {
+        return f.setLastModified(time);
+    }
 
 
-    public boolean setReadOnly() { return f.setReadOnly(); }
+    public boolean setReadOnly() {
+        return f.setReadOnly();
+    }
 
 
-    public boolean setWritable(boolean writable, boolean ownerOnly) { return f.setWritable(writable, ownerOnly); }
+    public boolean setWritable(boolean writable, boolean ownerOnly) {
+        return f.setWritable(writable, ownerOnly);
+    }
 
 
-    public boolean setWritable(boolean writable) { return f.setWritable(writable); }
+    public boolean setWritable(boolean writable) {
+        return f.setWritable(writable);
+    }
 
 
-    public boolean setReadable(boolean readable, boolean ownerOnly) { return f.setReadable(readable, ownerOnly); }
+    public boolean setReadable(boolean readable, boolean ownerOnly) {
+        return f.setReadable(readable, ownerOnly);
+    }
 
 
-    public boolean setReadable(boolean readable) { return f.setReadable(readable); }
+    public boolean setReadable(boolean readable) {
+        return f.setReadable(readable);
+    }
 
 
-    public boolean setExecutable(boolean executable, boolean ownerOnly) { return f.setExecutable(executable, ownerOnly); }
+    public boolean setExecutable(boolean executable, boolean ownerOnly) {
+        return f.setExecutable(executable, ownerOnly);
+    }
 
 
-    public boolean setExecutable(boolean executable) { return f.setExecutable(executable); }
+    public boolean setExecutable(boolean executable) {
+        return f.setExecutable(executable);
+    }
 
 
-    public boolean canExecute() { return f.canExecute(); }
-
-
-
+    public boolean canExecute() {
+        return f.canExecute();
+    }
 
 
     public static File[] listRoots() {
         java.io.File[] fs = java.io.File.listRoots();
         File[] sfs = new File[fs.length];
-        for(int i = 0; i < fs.length; i++) sfs[i] = new File(fs[i]);
+        for (int i = 0; i < fs.length; i++) sfs[i] = new File(fs[i]);
         return sfs;
     }
 
 
+    public long getTotalSpace() {
+        return f.getTotalSpace();
+    }
 
 
-
-    public long getTotalSpace() { return f.getTotalSpace(); }
-
-
-    public long getFreeSpace() { return f.getFreeSpace(); }
+    public long getFreeSpace() {
+        return f.getFreeSpace();
+    }
 
 
-    public long getUsableSpace() { return f.getUsableSpace(); }
+    public long getUsableSpace() {
+        return f.getUsableSpace();
+    }
 
-    public static File createTempFile(String prefix, String suffix, File directory) throws IOException{
+    public static File createTempFile(String prefix, String suffix, File directory) throws IOException {
         return new File(java.io.File.createTempFile(prefix, suffix, directory.f));
     }
 
 
-
-    public static File createTempFile(String prefix, String suffix) throws IOException{
+    public static File createTempFile(String prefix, String suffix) throws IOException {
         return new File(java.io.File.createTempFile(prefix, suffix));
     }
 
 
+    public int compareTo(File pathname) {
+        return f.compareTo(pathname.f);
+    }
 
 
-
-    public int compareTo(File pathname) { return f.compareTo(pathname.f); }
-
-
-    public boolean equals(Object obj) { return f.equals(obj); }
+    public boolean equals(Object obj) {
+        return f.equals(obj);
+    }
 
 
-    public int hashCode() { return f.hashCode(); }
+    public int hashCode() {
+        return f.hashCode();
+    }
 
 
-    public String toString() { return f.toString(); }
+    public String toString() {
+        return f.toString();
+    }
 
-    public Path toPath() { return f.toPath(); }
+    public Path toPath() {
+        return f.toPath();
+    }
 }

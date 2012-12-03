@@ -16,63 +16,63 @@ import sandbox.runtime.Account;
  * doesn't quite do the math properly.
  */
 public class HelloWorld {
-    public static String main(){
+    public static String main() {
 
         // start actual accounting
         runningTotal = sandbox.runtime.Account.get().memory.current;
 
-		int x = 0;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
-		x += 1;
+        int x = 0;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
+        x += 1;
 
         checkIncrement(0);
         a = new int[10];
@@ -91,39 +91,41 @@ public class HelloWorld {
         checkIncrement(120 * 8); // sizeof(T_REF) is 8 for now.
 
         String s = new String(); // A string has 7 fields
-        checkIncrement(7 * 8);        
+        checkIncrement(7 * 8);
 
-        StringBuilder builder = new StringBuilder(); 
+        StringBuilder builder = new StringBuilder();
         resetIncrement(); // Reset, since we'll use instructions to load the class.
-       
+
         builder = new StringBuilder(); // A stringbuilder has 1 field
         checkIncrement(1 * 8);
 
-	File f;
-        f=new File("test.txt");
-        try{
-                f.createNewFile();
-		System.out.println("Good, Created resource/test.txt");
-        }catch(IOException e){
-		System.err.println("IOException: ");
-                System.err.println(e);
-        }catch(SecurityException e){
-		System.err.println("Hmm should have been able to write to test.txt, but could not");
-	}
+        File f;
+        f = new File("test.txt");
+        try {
+            f.createNewFile();
+            System.out.println("Good, Created resource/test.txt");
+        } catch (IOException e) {
+            System.err.println("IOException: ");
+            System.err.println(e);
+        } catch (SecurityException e) {
+            System.err.println("Hmm should have been able to write to test.txt, but could not");
+        }
 
 
         java.util.Date d = new Date();
 
         // this should throw an exception
-        try{
+        try {
             java.util.jar.Attributes e = new Attributes();
-        }catch(Error e){}
+        } catch (Error e) {
+        }
 
         if (output == null) return "Success! Nothing broke";
         else return output;
     }
 
     static Object a;
+
     static {
         // Initialize all classes by forcing classloading
         a = new int[0];
@@ -136,7 +138,7 @@ public class HelloWorld {
     static String output = null;
 
     private static void resetIncrement() {
-      runningTotal = Account.get().memory.current;
+        runningTotal = Account.get().memory.current;
     }
 
     /**
@@ -144,10 +146,10 @@ public class HelloWorld {
      * of memory have been recorded as being allocated since the last time
      * this method was called.
      */
-    private static void checkIncrement(int delta){
+    private static void checkIncrement(int delta) {
         long newTotal = Account.get().memory.current;
         long actualDelta = newTotal - runningTotal;
-        if (actualDelta != delta) output = "memory incremented by " + actualDelta +" expected " + delta;
+        if (actualDelta != delta) output = "memory incremented by " + actualDelta + " expected " + delta;
         runningTotal = newTotal;
     }
 }

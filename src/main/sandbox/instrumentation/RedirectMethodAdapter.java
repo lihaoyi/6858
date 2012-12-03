@@ -14,14 +14,15 @@ import java.util.Set;
  */
 public class RedirectMethodAdapter extends MethodVisitor {
 
-    Set<String> remapped = new HashSet<String>(){{
+    Set<String> remapped = new HashSet<String>() {{
         add("java/io/File");
         add("java/lang/System");
     }};
 
-    public String filter(String s){
+    public String filter(String s) {
         return remapped.contains(s) ? "safe/" + s : s;
     }
+
     public RedirectMethodAdapter(MethodVisitor methodVisitor) {
         super(Opcodes.ASM4, methodVisitor);
     }
