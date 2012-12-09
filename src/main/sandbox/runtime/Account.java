@@ -12,7 +12,7 @@ import java.util.Random;
  * static methods which talk to a ThreadLocal stack.
  */
 public class Account {
-    final public static boolean RECLAIM_ALLOCATABLE_RESOURCES = false;
+    final public static boolean RECLAIM_ALLOCATABLE_RESOURCES = true;
     final public AllocatableResource memory;
     final public Resource instructions;
 

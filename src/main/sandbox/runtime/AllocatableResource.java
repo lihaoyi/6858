@@ -62,6 +62,8 @@ public class AllocatableResource extends Resource {
           if (Account.RECLAIM_ALLOCATABLE_RESOURCES) {
             current = current - size;
           }
+          // Remove associated entry in the allocationSizeMap.
+          allocationSizeMap.get().remove(o);
           o = referenceQueue.get().poll();
         }
         }
