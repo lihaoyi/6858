@@ -99,6 +99,13 @@ public class HelloWorld {
         builder = new StringBuilder(); // A stringbuilder has 1 field
         checkIncrement(1 * 8);
 
+        // Test memory reclaiming on garbage collection.
+        // This should not run out of memory when garbage reclaiming is on.
+        for (int i = 0; i < 100000; i++) {
+          s = new String();        
+        }
+
+
         File f;
         f = new File("test.txt");
         try {

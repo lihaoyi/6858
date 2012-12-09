@@ -17,16 +17,15 @@ public class MemoryMethodAdapter extends MethodVisitor {
             "boolean", "char", "float", "double",
             "byte", "short", "int", "long"
     };
-
     private final String recorderClass = "sandbox/runtime/Recorder";
-
     private final String checkerMethod = "checkAllocation";
-
+    private final String registerMethod = "registerAllocation";
     private final String checkerSignature = "(II)V";
-
     private final String arrayCheckerSignature = "([II)V";
-
     private final String classCheckerSignature = "(Ljava/lang/String;)V";
+    private final String registerAllocationSignature = "(Ljava/lang/Object;)V";
+    private int nonInitializedAllocations = 0;
+
     /**
      * The LocalVariablesSorter used in this adapter.  Lame that it's public but
      * the ASM architecture requires setting it from the outside after this
@@ -49,7 +48,6 @@ public class MemoryMethodAdapter extends MethodVisitor {
      */
     @Override
     public void visitIntInsn(int opcode, int operand) {
-
         if (opcode == Opcodes.NEWARRAY) {
             if (operand >= 4 && operand <= 11) {
                 // -> count
@@ -57,6 +55,11 @@ public class MemoryMethodAdapter extends MethodVisitor {
                 // -> count
                 super.visitIntInsn(opcode, operand);
                 // -> aref
+
+                super.visitInsn(Opcodes.DUP);
+                // -> aref aref
+                super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, registerMethod, registerAllocationSignature);
+
             } else {
                 System.out.println(
                         "NEWARRAY called with an invalid operand " +
@@ -68,7 +71,6 @@ public class MemoryMethodAdapter extends MethodVisitor {
             super.visitIntInsn(opcode, operand);
         }
     }
-
 
     /**
      * Reflection-based allocation (@see java.lang.reflect.Array#newInstance) is
@@ -90,18 +92,24 @@ public class MemoryMethodAdapter extends MethodVisitor {
                 checkProposedLength(-1);
                 // -> class count
                 super.visitMethodInsn(opcode, owner, name, signature);
-
+                // -> newobj
+                super.visitInsn(Opcodes.DUP);
+                // -> newobj newobj
+                super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, registerMethod, registerAllocationSignature);
                 return;
             } else if (signature.equals("(Ljava/lang/Class;[I)Ljava/lang/Object;")) {
                 // -> class dimsArray
                 super.visitInsn(Opcodes.DUP);
                 // -> class dimsArray dimsArray
-                // TODO(TFK): Would be nice to move this logic elsewhere.
                 super.visitIntInsn(Opcodes.SIPUSH, sizeofAtype(-1));
                 // -> class dimsArray dimsArray sizeof(REF_T)
                 super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, arrayCheckerSignature);
                 // -> class dimsArray
                 super.visitMethodInsn(opcode, owner, name, signature);
+                // -> newobj
+                super.visitInsn(Opcodes.DUP);
+                // -> newobj newobj
+                super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, registerMethod, registerAllocationSignature);
                 // -> newobj
                 return;
             }
@@ -109,7 +117,6 @@ public class MemoryMethodAdapter extends MethodVisitor {
 
         if (opcode == Opcodes.INVOKEVIRTUAL) {
             if ("clone".equals(name) && owner.startsWith("[")) {
-
                 // -> obj
                 super.visitInsn(Opcodes.DUP);
                 // -> obj newobj
@@ -123,17 +130,18 @@ public class MemoryMethodAdapter extends MethodVisitor {
                 // -> obj
                 super.visitMethodInsn(opcode, owner, name, signature);
                 // -> obj
+                super.visitInsn(Opcodes.DUP);
+                // -> obj obj
+                super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, registerMethod, registerAllocationSignature);
                 return;
             } else if ("newInstance".equals(name)) {
                 if ("java/lang/Class".equals(owner) && "()Ljava/lang/Object;".equals(signature)) {
                     // -> class
                     super.visitMethodInsn(opcode, owner, name, signature);
-                    // -> obj
                     return;
                 } else if ("java/lang/reflect/Constructor".equals(owner) && "([Ljava/lang/Object;)Ljava/lang/Object;".equals(signature)) {
                     // -> class
                     super.visitMethodInsn(opcode, owner, name, signature);
-                    // -> obj
                     return;
                 }
             }
@@ -143,7 +151,14 @@ public class MemoryMethodAdapter extends MethodVisitor {
             if ("clone".equals(name) && "java/lang/Object".equals(owner)) {
                 // -> class
                 super.visitMethodInsn(opcode, owner, name, signature);
-                // -> obj
+                return;
+            } else if ("<init>".equals(name) && nonInitializedAllocations > 0) {
+                nonInitializedAllocations--;
+                super.visitMethodInsn(opcode, owner, name, signature);
+                // objref
+                super.visitInsn(Opcodes.DUP);
+                // objref objref
+                super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, registerMethod, registerAllocationSignature);
                 return;
             }
         }
@@ -167,12 +182,19 @@ public class MemoryMethodAdapter extends MethodVisitor {
             super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass,
                     checkerMethod, classCheckerSignature);
             super.visitTypeInsn(opcode, typeName);
+            // Not allowed to touch the object yet.
+            // Use a trick from java-allocation-instrumentor
+            // and increment a count.
+            nonInitializedAllocations++; 
         } else if (opcode == Opcodes.ANEWARRAY) {
             // ... len
-            checkProposedLength(typeNameToInt(typeName));
+            checkProposedLengthDebug(typeNameToInt(typeName));
             // ... len
             super.visitTypeInsn(opcode, typeName);
             // ... arrayRef
+            super.visitInsn(Opcodes.DUP);
+            // ... arrayRef arrayRef
+            super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, registerMethod, registerAllocationSignature);
         } else {
             super.visitTypeInsn(opcode, typeName);
         }
@@ -185,6 +207,9 @@ public class MemoryMethodAdapter extends MethodVisitor {
         // -> dim1 dim2 dim3 ... dimN
         super.visitMultiANewArrayInsn(typeName, dimCount);
         // -> arrayRef
+        super.visitInsn(Opcodes.DUP);
+        // ... arrayRef arrayRef
+        super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, registerMethod, registerAllocationSignature);
     }
 
 
@@ -280,6 +305,20 @@ public class MemoryMethodAdapter extends MethodVisitor {
     }
 
     /**
+     * Checks that the dim at the top of the stack is not too large
+     */
+    private void checkProposedLengthDebug(int operand) {
+        // -> dim
+        super.visitInsn(Opcodes.DUP);
+        // -> dim dim
+        super.visitIntInsn(Opcodes.SIPUSH, sizeofAtype(operand));
+        // -> dim dim sizeof(operand)
+        super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, checkerSignature);
+        // -> dim
+    }
+
+
+    /**
      * Takes a bunch of dimensions at the top of the stack and checks that
      * their total size isn't too large
      */
@@ -309,7 +348,6 @@ public class MemoryMethodAdapter extends MethodVisitor {
         super.visitIntInsn(Opcodes.SIPUSH, sizeofAtype(operand));
         // -> arrayRef arrayRef sizeof(T_REF)
         super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, arrayCheckerSignature);
-        // -> arrayRef
 
         for (int i = 0; i < dimCount; i++) {
             super.visitInsn(Opcodes.DUP);

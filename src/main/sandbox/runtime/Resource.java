@@ -7,7 +7,6 @@ package sandbox.runtime;
  * resource into a child resource, and joining it back later.
  */
 public class Resource {
-
     public long max;
     public long current = 0;
     public String name;
@@ -17,7 +16,7 @@ public class Resource {
         this.max = Long.MAX_VALUE;
     }
 
-    private Resource(String name, long max) {
+    protected Resource(String name, long max) {
         this.name = name;
         this.max = max;
     }
@@ -51,16 +50,13 @@ public class Resource {
 
     public void join(Resource child) {
         assert (this.name.equals(child.name));
-
         this.current = this.current - child.max + child.current;
-
     }
 
     public Resource fork(long newMax) {
         this.checkIncrement(newMax);
         current = current + newMax;
         return new Resource(name, newMax);
-
     }
 
     public String toString() {

@@ -34,8 +34,8 @@ public class Transformer implements ClassFileTransformer {
                             ProtectionDomain protectionDomain,
                             byte[] origBytes) {
         Recorder.disabled.enable();
-        Recorder.disabled_cl.enable();
-        Recorder.disabled_ic.enable();
+        //Recorder.disabled_cl.enable();
+        //Recorder.disabled_ic.enable();
         /**
          * Skip instrumenting classes which cause problems.
          *
@@ -56,8 +56,8 @@ public class Transformer implements ClassFileTransformer {
         /* Second pass instrumentation */
         byte[] result = instrument(origBytes, loader);
         Recorder.disabled.disable();
-        Recorder.disabled_cl.disable();
-        Recorder.disabled_ic.disable();
+        //Recorder.disabled_cl.disable();
+        //Recorder.disabled_ic.disable();
         return result;
     }
 

@@ -15,30 +15,71 @@ import java.util.HashMap;
 public class Recorder {
 
     final public static GhettoThreadLocal disabled = new GhettoThreadLocal();
-    final public static GhettoThreadLocal disabled_cl = new GhettoThreadLocal();
-
-    final public static GhettoThreadLocal disabled_ic = new GhettoThreadLocal();
-
+    //final public static GhettoThreadLocal disabled_cl = new GhettoThreadLocal();
+//    final public static GhettoThreadLocal disabled_ic = new GhettoThreadLocal();
+    
     // Checks whether we can allocate count elements of size bytes.
     public static void checkAllocation(int count, int size) {
-
-
         if (!disabled.check()) disabled.enable();
         else return;
 
+//        System.out.println("TFKDEBUG2: checkAllocationDebug count:"+count+" size "+size);
         // Print statements for debugging.
         // System.out.println("Printing the count:" + count);
         // System.out.println("Printing the type:" + type);
-        sandbox.runtime.Account.get().memory.increment(count * size);
+       if (Account.get() != null &&
+           Account.get().memory != null) {
+         sandbox.runtime.Account.get().memory.increment(count * size);
+       }
+        disabled.disable();
+    }
+ 
+    // Checks whether we can allocate count elements of size bytes.
+    public static void checkAllocationDebug(int count, int size) {
+        if (!disabled.check()) disabled.enable();
+        else return;
+ //       System.out.println("TFKDEBUG: checkAllocationDebug count:"+count+" size "+size);
+        // Print statements for debugging.
+        // System.out.println("Printing the count:" + count);
+        // System.out.println("Printing the type:" + type);
+       if (Account.get() != null &&
+           Account.get().memory != null) {
+         sandbox.runtime.Account.get().memory.increment(count * size);
+       }
+        disabled.disable();
+    }
 
+    // Assumes that it will be called after every checkAllocation call
+    //  BEFORE the next checkAllocation call.
+    public static void registerAllocation(Object o) {
+      if (!disabled.check()) disabled.enable();
+      else return;
+      if (Account.get() != null &&
+          Account.get().memory != null) {
+        sandbox.runtime.Account.get().memory.registerAllocation(o); 
+      }
+      disabled.disable();
+    }
+
+    // Assumes that it will be called after every checkAllocation call
+    //  BEFORE the next checkAllocation call.
+    public static void registerAllocationDebug(Object o) {
+      if (!disabled.check()) disabled.enable();
+      else return;
+  //    System.out.println("TFKDEBUG: register allocation for object "+ o);
+      if (Account.get() != null &&
+          Account.get().memory != null) {
+        sandbox.runtime.Account.get().memory.registerAllocation(o);
+      }
+      disabled.disable();
     }
 
     public static void checkAllocation(String className) {
-
-        if (!disabled_cl.check()) disabled_cl.enable();
+        if (!disabled.check()) disabled.enable();
         else return;
 
-
+        if (Account.get() != null &&
+            Account.get().memory != null) {
         if (!ClassAdapter.fieldCountMap.containsKey(className)) {
             try {
                 if (sandbox.runtime.Account.bcl == null) {
@@ -60,21 +101,34 @@ public class Recorder {
             fieldCount = ClassAdapter.fieldCountMap.get(className);
         }
         sandbox.runtime.Account.get().memory.increment(fieldCount * 8);
-        disabled_cl.disable();
+        }
+        disabled.disable();
     }
 
     public static void checkAllocation(int[] counts, int size) {
         if (!disabled.check()) disabled.enable();
         else return;
-        sandbox.runtime.Account.get().memory.increment(counts, size);
+        if (Account.get() != null &&
+            Account.get().memory != null) {
+          sandbox.runtime.Account.get().memory.increment(counts, size);
+        }
         disabled.disable();
     }
 
-
     public static void checkInstructionCount(int count) {
-        if (!disabled_ic.check()) disabled_ic.enable();
+        if (disabled == null) {
+          return;
+        }
+        if (!disabled.check()) disabled.enable();
         else return;
-        Account.get().instructions.increment(count);
-        disabled_ic.disable();
+   //     if (count == 147) {
+   //     System.out.println("TFKDEBUG: instruction count increment " + count); }
+        // These checks are needed since this code may be called
+        // from the Reference Collector thread.
+        if (Account.get() != null &&
+            Account.get().instructions != null) {
+          Account.get().instructions.increment(count);
+        }
+        disabled.disable();
     }
 }

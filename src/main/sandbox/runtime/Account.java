@@ -13,7 +13,7 @@ import java.util.Random;
  */
 public class Account {
 
-    final public Resource memory;
+    final public AllocatableResource memory;
     final public Resource instructions;
 
     final public Account parent;
@@ -32,7 +32,7 @@ public class Account {
 
 
     private Account() {
-        memory = new sandbox.runtime.Resource("Memory");
+        memory = new sandbox.runtime.AllocatableResource("Memory");
         instructions = new Resource("Instructions");
         this.parent = null;
         this.key = new Object();
@@ -43,7 +43,7 @@ public class Account {
 
                     Account parent) {
 
-        memory = parent.memory.fork(maxMemory);
+        memory = (AllocatableResource) parent.memory.fork(maxMemory);
         instructions = parent.instructions.fork(maxInstructions);
 
         this.parent = parent;
