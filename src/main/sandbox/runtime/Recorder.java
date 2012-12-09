@@ -15,30 +15,11 @@ import java.util.HashMap;
 public class Recorder {
 
     final public static GhettoThreadLocal disabled = new GhettoThreadLocal();
-    //final public static GhettoThreadLocal disabled_cl = new GhettoThreadLocal();
-//    final public static GhettoThreadLocal disabled_ic = new GhettoThreadLocal();
     
     // Checks whether we can allocate count elements of size bytes.
     public static void checkAllocation(int count, int size) {
         if (!disabled.check()) disabled.enable();
         else return;
-
-//        System.out.println("TFKDEBUG2: checkAllocationDebug count:"+count+" size "+size);
-        // Print statements for debugging.
-        // System.out.println("Printing the count:" + count);
-        // System.out.println("Printing the type:" + type);
-       if (Account.get() != null &&
-           Account.get().memory != null) {
-         sandbox.runtime.Account.get().memory.increment(count * size);
-       }
-        disabled.disable();
-    }
- 
-    // Checks whether we can allocate count elements of size bytes.
-    public static void checkAllocationDebug(int count, int size) {
-        if (!disabled.check()) disabled.enable();
-        else return;
- //       System.out.println("TFKDEBUG: checkAllocationDebug count:"+count+" size "+size);
         // Print statements for debugging.
         // System.out.println("Printing the count:" + count);
         // System.out.println("Printing the type:" + type);
@@ -57,19 +38,6 @@ public class Recorder {
       if (Account.get() != null &&
           Account.get().memory != null) {
         sandbox.runtime.Account.get().memory.registerAllocation(o); 
-      }
-      disabled.disable();
-    }
-
-    // Assumes that it will be called after every checkAllocation call
-    //  BEFORE the next checkAllocation call.
-    public static void registerAllocationDebug(Object o) {
-      if (!disabled.check()) disabled.enable();
-      else return;
-  //    System.out.println("TFKDEBUG: register allocation for object "+ o);
-      if (Account.get() != null &&
-          Account.get().memory != null) {
-        sandbox.runtime.Account.get().memory.registerAllocation(o);
       }
       disabled.disable();
     }
@@ -121,8 +89,6 @@ public class Recorder {
         }
         if (!disabled.check()) disabled.enable();
         else return;
-   //     if (count == 147) {
-   //     System.out.println("TFKDEBUG: instruction count increment " + count); }
         // These checks are needed since this code may be called
         // from the Reference Collector thread.
         if (Account.get() != null &&
