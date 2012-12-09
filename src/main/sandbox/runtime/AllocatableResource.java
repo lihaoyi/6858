@@ -46,7 +46,8 @@ public class AllocatableResource extends Resource {
     @Override
     public void increment(long delta) {
         if (current + delta > 3 * max / 4) {
-          if (System.currentTimeMillis() - lastGC > 1) {
+          if (System.currentTimeMillis() - lastGC > 1 &&
+              Account.RECLAIM_ALLOCATABLE_RESOURCES) {
             System.gc();
             lastGC = System.currentTimeMillis();
           }
@@ -58,7 +59,9 @@ public class AllocatableResource extends Resource {
             o = referenceQueue.get().poll();
             continue;
           }
-          current = current - size;
+          if (Account.RECLAIM_ALLOCATABLE_RESOURCES) {
+            current = current - size;
+          }
           o = referenceQueue.get().poll();
         }
         }
