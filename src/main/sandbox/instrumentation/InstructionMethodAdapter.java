@@ -415,7 +415,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
 
     @Override
     public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
-        /* Index the labels */
+        /* Index the labels, and mark jump target labels */
         indexLabel(start);
         bbr.markJumpTarget(labelIndices.get(start));
         indexLabel(end);
