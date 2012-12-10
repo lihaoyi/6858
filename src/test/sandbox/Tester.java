@@ -20,61 +20,54 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 public class Tester {
-    public static <T> T run (final String className, final int maxMemory, final int maxBytecodes) throws Exception{
-        System.out.println("Loading Source...");
-        final String sourceCode = loadFile("resources/"+className+".java");
+    static HashMap<String, byte[] > classMap = new HashMap<String, byte[]>();
 
-        System.out.println("Compiling...");
-        final byte[] byteCode = Compiler.compile(className, sourceCode);
+    static MyClassLoader bcl = new MyClassLoader(classMap);
+    public static String run (final String className, final int maxMemory, final int maxBytecodes) throws Exception{
+        System.out.println("================================" + className + "================================");
+        Object key = Account.get().push(maxMemory, maxBytecodes);
+        Account.bcl = bcl; // TODO(TFK): Remove this hack.
+        String resultString = "";
+        try{
+            Class c = bcl.loadClass(className);
+            Method m = c.getMethod("main");
 
-        System.out.println("Setting up Classloader...");
+            resultString = "Result: " + m.invoke(null);
+        }catch(Exception e){
+            resultString = "Caught " + e.getClass();
+        }finally {
+            Account.get().pop(key);
+        }
 
-        MyClassLoader bcl = new MyClassLoader(new HashMap<String, byte[]>() {{
-            put(className, byteCode);
-        }});
+        return resultString;
+    }
+    public static void main(String[] args) throws Exception {
+
+        prepareFile("ScriptsInfiniteLoop");
+        prepareFile("ScriptsInfiniteMemory");
+        prepareFile("InfiniteCatch");
 
         System.setProperty("java.security.policy", "resources/Test.policy");
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }
 
+        System.out.println(run("ScriptsInfiniteLoop", Integer.MAX_VALUE, Integer.MAX_VALUE));
+        System.out.println(run("ScriptsInfiniteMemory", 50000, Integer.MAX_VALUE));
+        //System.out.println(run("InfiniteCatch", 50000, 50000));
 
-        System.out.println("Executing Code...");
-        System.out.println("============================================");
 
-        Object key = Account.get().push(maxMemory, maxBytecodes);
-        Account.bcl = bcl; // TODO(TFK): Remove this hack.
-
-        Class c = bcl.loadClass(className);
-        Method m = c.getMethod("main");
-        T result = (T) m.invoke(null);
-
-        System.out.println("RESULT: " + result);
-
-        Account.get().pop(key);
-        System.out.println("============================================");
-
-        return result;
     }
-    public static void main(String[] args) throws Exception {
-//        System.out.println(run("HelloWorld", 50000, 50000000));
-        try{
-            System.out.println(run("ScriptsInfiniteLoop", 50000, 500000));
-        }catch(Exception e){
-            System.out.println("Sucess! Exception caught from ScriptsInfiniteLoop");
-        }
-        try{
-            System.out.println(run("ScriptsInfiniteMemory", 50000, 500000));
-        }catch(Exception e){
-            System.out.println("Sucess! Exception caught from ScriptsInfiniteMemory");
-        }
-        try{
-            System.out.println(run("InfiniteCatch", 50000, 500000));s
-        }catch(Exception e){
-            System.out.println("Sucess! Exception caught from InfiniteCatch");
-        }
+    public static void prepareFile(String className) throws Exception{
+        System.out.println("Preparing " + className);
+        classMap.put(
+                className,
+                Compiler.compile(
+                        className,
+                        loadFile("resources/" + className + ".java")
+                )
+        );
     }
-
     public static String loadFile(String name) throws Exception {
         Reader input = new FileReader(name);
         StringWriter output = new StringWriter();

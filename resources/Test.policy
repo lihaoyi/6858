@@ -11,5 +11,7 @@ grant {
     permission java.lang.RuntimePermission "accessclassInPackage.sun.security.provider";
 
     permission java.io.FilePermission "good_file.txt", "write";
+    permission java.io.FilePermission "resources/-", "read";
+
 };
 

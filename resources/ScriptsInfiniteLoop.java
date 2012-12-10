@@ -1,17 +1,13 @@
-import org.jruby.embed.LocalVariableBehavior;
-import org.jruby.embed.ScriptingContainer;
-import org.python.util.PythonInterpreter;
-import sandbox.runtime.Account;
-import sandbox.runtime.ResourceLimitException;
-
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import java.lang.reflect.Array;
-import java.util.Date;
-import java.util.jar.Attributes;
 
-
+/**
+ * This is an infinite loop, but creatd in Javascript using Rhino, rather
+ * than in plain Java. Because the JS interpreter also gets instrumented,
+ * the infinite loop in interpreting the Javascript also throws a
+ * ResourceLimitException to return control back to the trusted code.
+ */
 public class ScriptsInfiniteLoop {
     public static String main() throws Exception {
 

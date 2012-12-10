@@ -2,7 +2,11 @@ import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-
+/**
+ * This is an attempt to allocate infinite memory in Javascript using Rhino.
+ * Because the Rhino engine also gets instrumented, the memory allocations are
+ * accounted for and limited.
+ */
 public class ScriptsInfiniteMemory {
     public static String main() throws Exception {
 
