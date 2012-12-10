@@ -20,19 +20,21 @@ import java.util.HashMap;
 public class Tester {
     public static void main(String[] args) throws Exception {
 
+	final String classname = "HelloWorld";
+
         System.out.println("Loading Source...");
-        final String sourceCode = loadFile("resources/HelloWorld.java");
+        final String sourceCode = loadFile("resources/"+classname+".java");
 
         System.out.println("Compiling...");
-        final byte[] byteCode = Compiler.compile("HelloWorld", sourceCode);
+        final byte[] byteCode = Compiler.compile(classname, sourceCode);
 
         System.out.println("Setting up Classloader...");
 
         MyClassLoader bcl = new MyClassLoader(new HashMap<String, byte[]>() {{
-            put("HelloWorld", byteCode);
+            put(classname, byteCode);
         }});
 
-        System.setProperty("java.security.policy", "resources/Test.policy");
+        System.setProperty("java.security.policy", "resources/"+classname+".policy");
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }
@@ -44,7 +46,7 @@ public class Tester {
         Object key = Account.get().push(500000, 50000000000L);
         Account.bcl = bcl; // TODO(TFK): Remove this hack.
 
-        Class c = bcl.loadClass("HelloWorld");
+        Class c = bcl.loadClass(classname);
         Method m = c.getMethod("main");
         String result = (String) m.invoke(null);
 
