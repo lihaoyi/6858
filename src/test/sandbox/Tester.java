@@ -60,12 +60,12 @@ public class Tester {
 //        System.out.println(run("HelloWorld", 50000, 50000000));
         try{
             System.out.println(run("ScriptsInfiniteLoop", 50000, 500000));
-        }catch(InvocationTargetException e){
+        }catch(ResourceLimitException e){
             System.out.println("Sucess! Exception caught from ScriptsInfiniteLoop");
         }
         try{
             System.out.println(run("ScriptsInfiniteMemory", 50000, 500000));
-        }catch(InvocationTargetException e){
+        }catch(ResourceLimitException e){
             System.out.println("Sucess! Exception caught from ScriptsInfiniteMemory");
         }
     }

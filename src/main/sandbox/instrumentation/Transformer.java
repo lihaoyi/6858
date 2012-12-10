@@ -50,10 +50,14 @@ public class Transformer implements ClassFileTransformer {
         if (sandbox.Compiler.VERBOSE) {
           System.out.println("Transforming " + className);
         }
+
         if (className.startsWith("java/lang/Shutdown") ||
-                className.startsWith("java/lang/Thread") ||
-                className.startsWith("sun/security/provider/PolicyFile$PolicyEntry") ||
-                className.startsWith("sandbox/")) {
+            className.startsWith("java/lang/Thread") ||
+            className.startsWith("sun/security/provider/PolicyFile$PolicyEntry") ||
+            className.startsWith("sandbox/") ||
+            className.startsWith("com/sun/tools") ||
+            className.startsWith("com/sun/source")) {
+
             if (sandbox.Compiler.VERBOSE) {
               System.out.println("Skipping");
             }
