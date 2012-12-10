@@ -69,7 +69,7 @@ public class Tester {
             System.out.println("Sucess! Exception caught from ScriptsInfiniteMemory");
         }
         try{
-            System.out.println(run("InfiniteCatch", 50000, 500000));
+            System.out.println(run("InfiniteCatch", 50000, 500000));s
         }catch(Exception e){
             System.out.println("Sucess! Exception caught from InfiniteCatch");
         }
