@@ -8,6 +8,8 @@ import sandbox.runtime.Recorder;
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,6 +35,9 @@ public class Transformer implements ClassFileTransformer {
                             Class<?> cls,
                             ProtectionDomain protectionDomain,
                             byte[] origBytes) {
+
+        Map<String, BasicBlocksRecord> methodBasicBlocksMap;
+
         Recorder.disabled.enable();
         //Recorder.disabled_cl.enable();
         //Recorder.disabled_ic.enable();
@@ -51,10 +56,13 @@ public class Transformer implements ClassFileTransformer {
             return origBytes;
         }
 
+        /* Instantiate method basic blocks hashmap for this class */
+        methodBasicBlocksMap = new HashMap<String, BasicBlocksRecord>();
+
         /* First pass instrumentation */
-        instrument(origBytes, loader);
+        instrument(origBytes, loader, methodBasicBlocksMap);
         /* Second pass instrumentation */
-        byte[] result = instrument(origBytes, loader);
+        byte[] result = instrument(origBytes, loader, methodBasicBlocksMap);
         Recorder.disabled.disable();
         //Recorder.disabled_cl.disable();
         //Recorder.disabled_ic.disable();
@@ -70,11 +78,11 @@ public class Transformer implements ClassFileTransformer {
      * @param originalBytes the original <code>byte[]</code> code.
      * @return the instrumented <code>byte[]</code> code.
      */
-    private static byte[] instrument(byte[] originalBytes, ClassLoader loader) {
+    private static byte[] instrument(byte[] originalBytes, ClassLoader loader, Map<String, BasicBlocksRecord> methodBasicBlocksMap) {
         try {
 
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-            ClassAdapter adapter = new ClassAdapter(cw);
+            ClassAdapter adapter = new ClassAdapter(cw, methodBasicBlocksMap);
             ClassReader cr = new ClassReader(originalBytes);
             cr.accept(adapter, ClassReader.SKIP_FRAMES);
 
