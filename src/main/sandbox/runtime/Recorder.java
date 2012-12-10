@@ -55,8 +55,8 @@ public class Recorder {
                 }
                 sandbox.runtime.Account.bcl.loadClassForAnalysis(className.replace("/", "."));
             } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Exception trying to load class." + e.getMessage());
+                //e.printStackTrace();
+                //System.out.println("Exception trying to load class." + e.getMessage());
             }
         }
         //System.out.println("TFK: In recorder checkingClassAllocation "
