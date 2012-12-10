@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 public class Tester {
-    public static <T> T run (final String className, final int maxBytecodes, final int maxMemory) throws Exception{
+    public static <T> T run (final String className, final int maxMemory, final int maxBytecodes) throws Exception{
         System.out.println("Loading Source...");
         final String sourceCode = loadFile("resources/"+className+".java");
 
