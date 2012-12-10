@@ -8,12 +8,14 @@ import sandbox.classloader.MyClassLoader;
 
 import sandbox.runtime.Account;
 import sandbox.runtime.Recorder;
+import sandbox.runtime.ResourceLimitException;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
@@ -55,8 +57,17 @@ public class Tester {
         return result;
     }
     public static void main(String[] args) throws Exception {
-        System.out.println(run("HelloWorld", 50000, 50000000));
-
+//        System.out.println(run("HelloWorld", 50000, 50000000));
+        try{
+            System.out.println(run("ScriptsInfiniteLoop", 50000, 500000));
+        }catch(InvocationTargetException e){
+            System.out.println("Sucess! Exception caught from ScriptsInfiniteLoop");
+        }
+        try{
+            System.out.println(run("ScriptsInfiniteMemory", 50000, 500000));
+        }catch(InvocationTargetException e){
+            System.out.println("Sucess! Exception caught from ScriptsInfiniteMemory");
+        }
     }
 
     public static String loadFile(String name) throws Exception {
