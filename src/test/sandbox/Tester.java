@@ -23,7 +23,7 @@ public class Tester {
     static HashMap<String, byte[] > classMap = new HashMap<String, byte[]>();
 
     static MyClassLoader bcl = new MyClassLoader(classMap);
-    public static String run (final String className, final int maxMemory, final int maxBytecodes) throws Exception{
+    public static String run (final String className, final long maxMemory, final long maxBytecodes) throws Exception{
         System.out.println("================================" + className + "================================");
         Object key = Account.get().push(maxMemory, maxBytecodes);
         Account.bcl = bcl; // TODO(TFK): Remove this hack.
@@ -52,8 +52,8 @@ public class Tester {
             System.setSecurityManager(new SecurityManager());
         }
 
-        System.out.println(run("ScriptsInfiniteLoop", Integer.MAX_VALUE, Integer.MAX_VALUE));
-        System.out.println(run("ScriptsInfiniteMemory", 50000, Integer.MAX_VALUE));
+        System.out.println(run("ScriptsInfiniteLoop", Long.MAX_VALUE, 100000));
+        System.out.println(run("ScriptsInfiniteMemory", 100000, Long.MAX_VALUE));
         //System.out.println(run("InfiniteCatch", 50000, 50000));
 
 
