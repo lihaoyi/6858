@@ -62,12 +62,13 @@ public class Tester {
             System.out.println(run("ScriptsInfiniteLoop", 50000, 500000));
         }catch(ResourceLimitException e){
             System.out.println("Sucess! Exception caught from ScriptsInfiniteLoop");
-        }
+        } catch (Exception e) {}
+
         try{
             System.out.println(run("ScriptsInfiniteMemory", 50000, 500000));
         }catch(ResourceLimitException e){
             System.out.println("Sucess! Exception caught from ScriptsInfiniteMemory");
-        }
+        } catch (Exception e) {}
     }
 
     public static String loadFile(String name) throws Exception {
