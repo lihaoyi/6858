@@ -1,0 +1,8 @@
+grant {
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.net";
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.security.action";
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.net.spi";
+    permission java.lang.RuntimePermission "accessclassInPackage.sun.security.provider";
+    permission java.net.SocketPermission "fake_good_address:4444", "connect, resolve";
+
+};
