@@ -1,4 +1,4 @@
 grant {
     permission java.io.FilePermission "test.txt", "write";
-
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.security.provider"
 };
