@@ -34,7 +34,7 @@ public class Tester {
 
             resultString = "Result: " + m.invoke(null);
         } catch(InvocationTargetException e) {
-            resultString = "Caught " + e.getCause();
+            resultString = "Caught (unwrapped) " + e.getCause();
         } catch(Exception e) {
             resultString = "Caught " + e.getClass();
         } finally {
