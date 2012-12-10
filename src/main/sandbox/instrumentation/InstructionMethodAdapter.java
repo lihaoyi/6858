@@ -10,52 +10,84 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Handle;
 
+/* Data structure wrapper to maintain the instruction counts and boundaries of
+ * basic instruction blocks, as well which labels are jump targets, for an
+ * analyzed jvm bytecode method. */
 class BasicBlocksRecord {
-    private List<Integer> bb_icounts, bb_labels, bb_jump_targets;
+    /* List of instruction counts, boundaries, and jump target labels */
+    private List<Integer> bb_icounts, bb_boundaries, jump_targets;
 
+    /* Boundary indicating the start of a method */
+    public final static int BOUNDARY_START = -1;
+    /* Boundary indicating a flow control change (e.g. an invoke or branch) */
+    public final static int BOUNDARY_FLOW_CONTROL = -2;
+
+    /* Initialize the underlying data structure */
     public BasicBlocksRecord() {
         bb_icounts = new ArrayList<Integer>();
-        bb_labels = new ArrayList<Integer>();
-        bb_jump_targets = new ArrayList<Integer>();
+        bb_boundaries = new ArrayList<Integer>();
+        jump_targets = new ArrayList<Integer>();
     }
 
-    public void pushBasicBlock(int instructionCount, int labelIndex) {
-        bb_icounts.add(instructionCount);
-        bb_labels.add(labelIndex);
+    /* Push the instruction count and boundary associated with the analyzed
+     * basic block */
+    public void pushBasicBlock(int icount, int boundary) {
+        bb_icounts.add(icount);
+        bb_boundaries.add(boundary);
     }
 
+    /* Pop the next basic block instruction count and boundary in FIFO
+     * fashion */
     public int[] popBasicBlock() {
         int[] bb = new int[2];
         bb[0] = bb_icounts.remove(0);
-        bb[1] = bb_labels.remove(0);
+        bb[1] = bb_boundaries.remove(0);
         return bb;
     }
 
-    public int nextBasicBlockLabel() {
-        return bb_labels.get(0);
+    /* Peek at the next basic block boundary without removing it */
+    public int peekNextBasicBlockBoundary() {
+        return bb_boundaries.get(0);
     }
 
+    /* Get the number of recorded basic blocks */
     public int numBasicBlocks() {
-        return bb_labels.size();
+        return bb_boundaries.size();
     }
 
-    public void markJumpTarget(int labelIndex) {
-        bb_jump_targets.add(labelIndex);
+    /* Mark a label as a jump target */
+    public void markJumpTarget(int boundary) {
+        jump_targets.add(boundary);
     }
 
-    public boolean checkJumpTarget(int labelIndex) {
-        return bb_jump_targets.contains(labelIndex);
+    /* Check if a boundary is a jump target */
+    public boolean checkJumpTarget(int boundary) {
+        return boundaryIsLabel(boundary) && jump_targets.contains(boundary);
     }
 
+    /* Check if a boundary is a label */
+    public boolean boundaryIsLabel(int boundary) {
+        return (boundary >= 0);
+    }
+
+    /* String representation of this basic blocks record for debugging purposes */
     public String toString() {
         int i;
-        String s = "";
+        String s = "[";
 
         for (i = 0; i < bb_icounts.size(); i++) {
-            s += "(count: " + bb_icounts.get(i) + ", label: " + bb_labels.get(i) + ", jump_target: " + bb_jump_targets.contains(bb_labels.get(i)) + "),";
+            s += "(count: " + bb_icounts.get(i) + ", label: " + bb_boundaries.get(i) + "), ";
         }
 
-        return "\n[" + s + "]";
+        s += "]\nJump Targets: ";
+
+        for (i = 0; i < jump_targets.size(); i++) {
+            s += "L" + jump_targets.get(i) + " ";
+        }
+
+        s += "\n";
+
+        return s;
     }
 }
 
@@ -63,7 +95,8 @@ class BasicBlocksRecord {
  * Method adapter meant to add instruction-counting instrumentation to the
  * processed methods
  * <p/>
- * First pass builds basic block record, second pass instruments.
+ * First pass builds basic blocks record for method, second pass instruments
+ * method.
  */
 public class InstructionMethodAdapter extends MethodVisitor {
 
@@ -71,11 +104,8 @@ public class InstructionMethodAdapter extends MethodVisitor {
     private final String checkerMethod = "checkInstructionCount";
     private final String checkerSignature = "(I)V";
 
-    private boolean secondPass;
-
-    private final int LABEL_INDEX_START = -1;
-    private final int LABEL_INDEX_CALL = -2;
     private final boolean DEBUG = false;
+    private boolean secondPass;
 
     private int icount = 0, lcount = 0;
     private HashMap<Label, Integer> labelIndices;
@@ -85,11 +115,14 @@ public class InstructionMethodAdapter extends MethodVisitor {
         super(Opcodes.ASM4, methodVisitor);
         labelIndices = new HashMap<Label, Integer>();
 
+        /* Second pass for instrumentation */
         if (methodBasicBlocksMap.containsKey(methodID)) {
             bbr = methodBasicBlocksMap.get(methodID);
             secondPass = true;
             if (DEBUG)
                 System.err.println("\n\n========== INSTRUMENTING " + methodID + " ==========\n\n");
+
+        /* First pass for analysis */
         } else {
             bbr = new BasicBlocksRecord();
             methodBasicBlocksMap.put(methodID, bbr);
@@ -101,69 +134,70 @@ public class InstructionMethodAdapter extends MethodVisitor {
 
     private void indexLabel(Label label) {
         /* Give the label an integer index in our hash map, if we haven't seen
-         * it before */
-        if (labelIndices.containsKey(label) == false) {
+         * it yet */
+        if (labelIndices.containsKey(label) == false)
             labelIndices.put(label, lcount++);
-        }
     }
 
-    private void recordBasicBlock(int labelIndex) {
-        if (secondPass) {
+    private void recordBasicBlock(int boundary) {
+        if (secondPass)
             return;
-        }
 
         /* Mark the instruction count for this basic block */
-        bbr.pushBasicBlock(icount, labelIndex);
+        bbr.pushBasicBlock(icount, boundary);
         /* Reset instruction count */
         icount = 0;
     }
 
-    private void insertBasicBlockCheck(int labelIndex) {
+    private void insertBasicBlockCheck(int visitingBoundary) {
         int[] bb;
-        int bb_icount = 0, bb_label_next = 0;
+        int bb_icount = 0, bb_boundary = 0;
 
         if (!secondPass)
             return;
 
+        /* Assert we have basic blocks left to instrument */
         if (bbr.numBasicBlocks() == 0)
             return;
 
-        /* If we're visiting a non-jump target label, we should
-         * have already collapsed it into the previous basic block */
-        if (labelIndex >= 0 && !bbr.checkJumpTarget(labelIndex))
+        /* If we're visiting a non-jump-target-label (e.g. a label marking a
+         * line annotation), we should have already optimized it into the
+         * previous basic block */
+        if (bbr.boundaryIsLabel(visitingBoundary) && !bbr.checkJumpTarget(visitingBoundary))
             return;
 
-        /* Pop the next basic block instruction count and label index */
+        /* Pop the next basic block instruction count and boundary */
         bb = bbr.popBasicBlock();
-        bb_icount += bb[0];
+        bb_icount = bb[0];
+        bb_boundary = bb[1];
 
-        /* If this block does not end with a jump, or with a label that is a
-         * jump target, then collapse all following non-jump-target label
-         * basic blocks into this basic block. */
-        while (bb[1] != LABEL_INDEX_CALL && (bb[1] >= 0 && !bbr.checkJumpTarget(bb[1]))) {
+        /* If this block does not end with a control flow change, or with a
+         * label that is a jump target,
+         *
+         * then collapse all following non-jump-target-label boundary basic
+         * blocks into this basic block. */
+        while (bb_boundary != BasicBlocksRecord.BOUNDARY_FLOW_CONTROL && (bbr.boundaryIsLabel(bb_boundary) && !bbr.checkJumpTarget(bb_boundary))) {
             /* If we're out of basic blocks, break */
             if (bbr.numBasicBlocks() == 0)
                 break;
 
-            bb_label_next = bbr.nextBasicBlockLabel();
-
-            /* If the next basic block is a jump target label, break */
-            if (bb_label_next >= 0 && bbr.checkJumpTarget(bb_label_next))
+            /* If the next basic block boundary is a jump target label, break */
+            bb_boundary = bbr.peekNextBasicBlockBoundary();
+            if (bbr.boundaryIsLabel(bb_boundary) && bbr.checkJumpTarget(bb_boundary))
                 break;
 
-            /* Incorporate it's instruction count into the current basic
-             * block */
+            /* Incorporate its instruction count into this basic block */
             bb = bbr.popBasicBlock();
             bb_icount += bb[0];
 
             /* If we just added a control flow change to this basic block,
              * break */
-            if (bb_label_next < 0)
+            if (bb_boundary == BasicBlocksRecord.BOUNDARY_FLOW_CONTROL)
                 break;
         }
 
         /* If this compressed basic block contains instructions, drop a
-         * check method invocation */
+         * check instructions method invocation */
         if (bb_icount > 0) {
             super.visitIntInsn(Opcodes.SIPUSH, bb_icount);
             super.visitMethodInsn(Opcodes.INVOKESTATIC, recorderClass, checkerMethod, checkerSignature);
@@ -178,14 +212,15 @@ public class InstructionMethodAdapter extends MethodVisitor {
         if (opcode == Opcodes.IRETURN || opcode == Opcodes.LRETURN ||
                 opcode == Opcodes.FRETURN || opcode == Opcodes.DRETURN ||
                 opcode == Opcodes.ARETURN || opcode == Opcodes.RETURN) {
-            recordBasicBlock(LABEL_INDEX_CALL);
+            recordBasicBlock(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
         }
         mv.visitInsn(opcode);
 
+        /* Insert an instructions check after a control flow change */
         if (opcode == Opcodes.IRETURN || opcode == Opcodes.LRETURN ||
                 opcode == Opcodes.FRETURN || opcode == Opcodes.DRETURN ||
                 opcode == Opcodes.ARETURN || opcode == Opcodes.RETURN) {
-            insertBasicBlockCheck(LABEL_INDEX_CALL);
+            insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
         }
     }
 
@@ -193,6 +228,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
     public void visitIntInsn(final int opcode, final int operand) {
         /* Count the instruction */
         icount += 1;
+
         mv.visitIntInsn(opcode, operand);
     }
 
@@ -200,14 +236,16 @@ public class InstructionMethodAdapter extends MethodVisitor {
     public void visitVarInsn(final int opcode, final int var) {
         /* Count the instruction */
         icount += 1;
+
         /* Control flow change */
         if (opcode == Opcodes.RET) {
-            recordBasicBlock(LABEL_INDEX_CALL);
+            recordBasicBlock(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
         }
         mv.visitVarInsn(opcode, var);
 
+        /* Insert an instructions check after a control flow change */
         if (opcode == Opcodes.RET) {
-            insertBasicBlockCheck(LABEL_INDEX_CALL);
+            insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
         }
     }
 
@@ -215,6 +253,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
     public void visitTypeInsn(final int opcode, final String type) {
         /* Count the instruction */
         icount += 1;
+
         mv.visitTypeInsn(opcode, type);
     }
 
@@ -223,6 +262,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
                                final String name, final String desc) {
         /* Count the instruction */
         icount += 1;
+
         mv.visitFieldInsn(opcode, owner, name, desc);
     }
 
@@ -233,11 +273,12 @@ public class InstructionMethodAdapter extends MethodVisitor {
         icount += 1;
 
         /* Control flow change */
-        recordBasicBlock(LABEL_INDEX_CALL);
+        recordBasicBlock(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
 
         mv.visitMethodInsn(opcode, owner, name, desc);
 
-        insertBasicBlockCheck(LABEL_INDEX_CALL);
+        /* Insert an instructions check after a control flow change */
+        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
     }
 
     @Override
@@ -247,34 +288,39 @@ public class InstructionMethodAdapter extends MethodVisitor {
         icount += 1;
 
         /* Control flow change */
-        recordBasicBlock(LABEL_INDEX_CALL);
+        recordBasicBlock(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
 
         mv.visitInvokeDynamicInsn(name, desc, bsm, bsmArgs);
 
-        insertBasicBlockCheck(LABEL_INDEX_CALL);
+        /* Insert an instructions check after a control flow change */
+        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
     }
 
     @Override
     public void visitJumpInsn(final int opcode, final Label label) {
+        /* Index the label */
         indexLabel(label);
 
         /* Count the instruction */
         icount += 1;
+
         /* Control flow change */
-        recordBasicBlock(LABEL_INDEX_CALL);
+        recordBasicBlock(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
 
         /* Mark the label as a jump target */
         bbr.markJumpTarget(labelIndices.get(label));
 
         mv.visitJumpInsn(opcode, label);
 
-        insertBasicBlockCheck(LABEL_INDEX_CALL);
+        /* Insert an instructions check after a control flow change */
+        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
     }
 
     @Override
     public void visitLdcInsn(final Object cst) {
         /* Count the instruction */
         icount += 1;
+
         mv.visitLdcInsn(cst);
     }
 
@@ -282,12 +328,13 @@ public class InstructionMethodAdapter extends MethodVisitor {
     public void visitIincInsn(final int var, final int increment) {
         /* Count the instruction */
         icount += 1;
+
         mv.visitIincInsn(var, increment);
     }
 
     @Override
     public void visitLabel(Label label) {
-        /* Index the seen label */
+        /* Index the label */
         indexLabel(label);
 
         /* Potential control flow change */
@@ -295,6 +342,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
 
         mv.visitLabel(label);
 
+        /* Insert an instructions check, if it's a jump target label */
         insertBasicBlockCheck(labelIndices.get(label));
     }
 
@@ -305,10 +353,10 @@ public class InstructionMethodAdapter extends MethodVisitor {
         icount += 1;
 
         /* Control flow change */
-        recordBasicBlock(LABEL_INDEX_CALL);
+        recordBasicBlock(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
 
+        /* Index the labels, and mark jump target labels */
         indexLabel(dflt);
-        /* Mark the labels as jump targets */
         for (Label l : labels) {
             indexLabel(l);
             bbr.markJumpTarget(labelIndices.get(l));
@@ -316,7 +364,8 @@ public class InstructionMethodAdapter extends MethodVisitor {
 
         mv.visitTableSwitchInsn(min, max, dflt, labels);
 
-        insertBasicBlockCheck(LABEL_INDEX_CALL);
+        /* Insert an instructions check after a control flow change */
+        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
     }
 
     @Override
@@ -326,10 +375,10 @@ public class InstructionMethodAdapter extends MethodVisitor {
         icount += 1;
 
         /* Control flow change */
-        recordBasicBlock(LABEL_INDEX_CALL);
+        recordBasicBlock(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
 
+        /* Index the labels, and mark jump target labels */
         indexLabel(dflt);
-        /* Mark the labels as jump targets */
         for (Label l : labels) {
             indexLabel(l);
             bbr.markJumpTarget(labelIndices.get(l));
@@ -337,7 +386,8 @@ public class InstructionMethodAdapter extends MethodVisitor {
 
         mv.visitLookupSwitchInsn(dflt, keys, labels);
 
-        insertBasicBlockCheck(LABEL_INDEX_CALL);
+        /* Insert an instructions check after a control flow change */
+        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
     }
 
     @Override
@@ -350,18 +400,22 @@ public class InstructionMethodAdapter extends MethodVisitor {
 
     @Override
     public void visitCode() {
-        insertBasicBlockCheck(LABEL_INDEX_START);
+        /* Insert an instructions check at the start of the method, before any
+         * target instructions are executed */
+        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_START);
     }
 
     @Override
     public void visitEnd() {
         if (DEBUG)
             System.err.println(bbr);
+
         mv.visitEnd();
     }
 
     @Override
     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
+        /* Index the labels */
         indexLabel(start);
         indexLabel(end);
 
@@ -370,6 +424,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
 
     @Override
     public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
+        /* Index the labels */
         indexLabel(start);
         indexLabel(end);
         indexLabel(handler);
