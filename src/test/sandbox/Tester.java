@@ -33,9 +33,11 @@ public class Tester {
             Method m = c.getMethod("main");
 
             resultString = "Result: " + m.invoke(null);
-        }catch(Exception e){
+        } catch(InvocationTargetException e) {
+            resultString = "Caught " + e.getCause();
+        } catch(Exception e) {
             resultString = "Caught " + e.getClass();
-        }finally {
+        } finally {
             Account.get().pop(key);
         }
 
