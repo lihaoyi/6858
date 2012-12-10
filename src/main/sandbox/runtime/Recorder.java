@@ -89,10 +89,13 @@ public class Recorder {
         }
         if (!disabled.check()) disabled.enable();
         else return;
+
+
         // These checks are needed since this code may be called
         // from the Reference Collector thread.
         if (Account.get() != null &&
             Account.get().instructions != null) {
+            //if (Account.get().memory.max != Long.MAX_VALUE)System.out.println("Checking" + count);
           Account.get().instructions.increment(count);
         }
         disabled.disable();

@@ -47,9 +47,7 @@ public class Transformer implements ClassFileTransformer {
          * Not sure why all these guys need to be skipped, but they cause
          * red words to appear if they're not. Ideally we would figure out why.
          */
-        if (sandbox.Compiler.VERBOSE) {
-          System.out.println("Transforming " + className);
-        }
+
 
         if (className.startsWith("java/lang/Shutdown") ||
             className.startsWith("java/lang/Thread") ||
@@ -63,7 +61,9 @@ public class Transformer implements ClassFileTransformer {
             }
             return origBytes;
         }
-
+        //if (sandbox.Compiler.VERBOSE) {
+            System.out.println("Transforming " + className);
+        //}
         /* Instantiate method basic blocks hashmap for this class */
         methodBasicBlocksMap = new HashMap<String, BasicBlocksRecord>();
 

@@ -24,6 +24,6 @@ public class ScriptsInfiniteMemory {
 
         engine.eval(script);
 
-        return "Success! Nothing broke";
+        return "Oh No!";
     }
 }

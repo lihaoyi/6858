@@ -23,6 +23,6 @@ public class ScriptsInfiniteLoop {
                     "}" +
                 "})()";
         engine.eval(script);
-        return "Success! Nothing broke";
+        return "Oh No!";
     }
 }

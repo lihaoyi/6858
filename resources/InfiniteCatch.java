@@ -7,8 +7,11 @@
  */
 public class InfiniteCatch {
     public static String main() throws Exception {
-        int x = 0;
-        try{
+        double x = 10000;
+        while(true) {
+            x++;
+        }
+        /*try{
             while(true) x++;
         }catch(Exception a){
             try{
@@ -44,7 +47,7 @@ public class InfiniteCatch {
             }
         }finally{
             return "haha i caught you exception and ran my finally";
-        }
+        }*/
 
 
     }

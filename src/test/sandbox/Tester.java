@@ -7,14 +7,11 @@ import org.python.util.PythonInterpreter;
 import sandbox.classloader.MyClassLoader;
 
 import sandbox.runtime.Account;
-import sandbox.runtime.Recorder;
-import sandbox.runtime.ResourceLimitException;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.lang.reflect.Constructor;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -48,7 +45,7 @@ public class Tester {
         prepareFile("ScriptsInfiniteLoop");
         prepareFile("ScriptsInfiniteMemory");
         prepareFile("InfiniteCatch");
-	prepareFile("FileTest");
+	    prepareFile("FileTest");
 
         System.setProperty("java.security.policy", "resources/Test.policy");
         if (System.getSecurityManager() == null) {
@@ -59,7 +56,8 @@ public class Tester {
         System.out.println(run("ScriptsInfiniteMemory", 100000, Long.MAX_VALUE));
         //System.out.println(run("InfiniteCatch", 50000, 50000));
 	
-	System.out.println(run("FileTest", 100000,1000000));
+	    //System.out.println(run("FileTest", 100000,1000000));
+        System.out.println(run("InfiniteCatch", 50000, 50000));
 
 
     }
