@@ -46,6 +46,7 @@ public class Tester {
         prepareFile("ScriptsInfiniteLoop");
         prepareFile("ScriptsInfiniteMemory");
         prepareFile("InfiniteCatch");
+	prepareFile("FileTest");
 
         System.setProperty("java.security.policy", "resources/Test.policy");
         if (System.getSecurityManager() == null) {
@@ -55,6 +56,7 @@ public class Tester {
         System.out.println(run("ScriptsInfiniteLoop", Long.MAX_VALUE, 100000));
         System.out.println(run("ScriptsInfiniteMemory", 100000, Long.MAX_VALUE));
         //System.out.println(run("InfiniteCatch", 50000, 50000));
+	System.out.println(run("FileTest", 100000,1000000));
 
 
     }
