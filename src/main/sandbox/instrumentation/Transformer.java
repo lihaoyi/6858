@@ -61,9 +61,9 @@ public class Transformer implements ClassFileTransformer {
             }
             return origBytes;
         }
-        if (sandbox.Compiler.VERBOSE) {
+        //if (sandbox.Compiler.VERBOSE) {
             System.out.println("Transforming " + className);
-        }
+        //}
         /* Instantiate method basic blocks hashmap for this class */
         methodBasicBlocksMap = new HashMap<String, BasicBlocksRecord>();
 

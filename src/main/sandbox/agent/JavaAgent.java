@@ -24,25 +24,26 @@ public class JavaAgent {
                 new Transformer(),
                 inst.isRetransformClassesSupported()
         );
-//        Class<?>[] classes = inst.getAllLoadedClasses();
-//        ArrayList<Class<?>> classList = new ArrayList<Class<?>>();
-//        for (int i = 0; i < classes.length; i++) {
-//            System.out.println(classes[i]);
-//            if (inst.isModifiableClass(classes[i])) {
-//                classList.add(classes[i]);
-//            }else{
-//                System.out.println("UNMODIFIABLE");
-//            }
-//        }
-//
-//        // Reload classes, if possible.
-//        Class<?>[] workaround = new Class<?>[classList.size()];
-//        try {
-//            inst.retransformClasses(classList.toArray(workaround));
-//        } catch (UnmodifiableClassException e) {
-//            System.err.println("AllocationInstrumenter was unable to " +
-//                    "retransform early loaded classes.");
-//        }
+        Class<?>[] classes = inst.getAllLoadedClasses();
+        System.out.println(classes.length);
+        ArrayList<Class<?>> classList = new ArrayList<Class<?>>();
+        for (int i = 0; i < classes.length; i++) {
+            System.out.println(classes[i]);
+            if (inst.isModifiableClass(classes[i])) {
+                classList.add(classes[i]);
+            }else{
+                System.out.println("UNMODIFIABLE");
+            }
+        }
+
+        // Reload classes, if possible.
+        Class<?>[] workaround = new Class<?>[classList.size()];
+        try {
+            inst.retransformClasses(classList.toArray(workaround));
+        } catch (UnmodifiableClassException e) {
+            System.err.println("AllocationInstrumenter was unable to " +
+                    "retransform early loaded classes.");
+        }
         System.out.println("Agent Premain End");
     }
 
