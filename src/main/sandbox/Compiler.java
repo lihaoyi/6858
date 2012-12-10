@@ -15,19 +15,24 @@ import java.util.List;
  * a byte[] containing the resultant bytecode.
  */
 public class Compiler {
+    public static boolean VERBOSE = false;
+
     public static byte[] compile(String fullName, String src) throws Exception {
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-
-        ClassFileManager fileManager = new ClassFileManager(compiler.getStandardFileManager(null, null, null));
-
-        List<JavaFileObject> jfiles = new ArrayList<JavaFileObject>();
-        jfiles.add(new CharSequenceJavaFileObject(fullName, src));
-
-        List<String> options = new ArrayList<String>();
-        options.add("-g:none");
-        compiler.getTask(null, fileManager, null, options, null, jfiles).call();
-
-        return fileManager.getBytes();
+        try {
+            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+    
+            ClassFileManager fileManager = new ClassFileManager(compiler.getStandardFileManager(null, null, null));
+    
+            List<JavaFileObject> jfiles = new ArrayList<JavaFileObject>();
+            jfiles.add(new CharSequenceJavaFileObject(fullName, src));
+    
+            List<String> options = new ArrayList<String>();
+            options.add("-g:none");
+            compiler.getTask(null, fileManager, null, options, null, jfiles).call();
+            return fileManager.getBytes();
+        } catch (Throwable e) {
+            return null;
+        }
     }
 
     private static class CharSequenceJavaFileObject extends SimpleJavaFileObject {

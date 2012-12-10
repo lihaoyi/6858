@@ -42,12 +42,16 @@ public class Transformer implements ClassFileTransformer {
          * Not sure why all these guys need to be skipped, but they cause
          * red words to appear if they're not. Ideally we would figure out why.
          */
-        System.out.println("Transforming " + className);
+        if (sandbox.Compiler.VERBOSE) {
+          System.out.println("Transforming " + className);
+        }
         if (className.startsWith("java/lang/Shutdown") ||
                 className.startsWith("java/lang/Thread") ||
                 className.startsWith("sun/security/provider/PolicyFile$PolicyEntry") ||
                 className.startsWith("sandbox/")) {
-            System.out.println("Skipping");
+            if (sandbox.Compiler.VERBOSE) {
+              System.out.println("Skipping");
+            }
             return origBytes;
         }
 
@@ -82,12 +86,12 @@ public class Transformer implements ClassFileTransformer {
 
             return output;
         } catch (RuntimeException e) {
-            System.out.println("Failed to instrument class: " + e);
-            e.printStackTrace();
+            //System.out.println("Failed to instrument class: " + e);
+            //e.printStackTrace();
             throw e;
         } catch (Error e) {
-            System.out.println("Failed to instrument class: " + e);
-            e.printStackTrace();
+            //System.out.println("Failed to instrument class: " + e);
+            //e.printStackTrace();
             throw e;
         }
     }
