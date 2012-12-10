@@ -8,6 +8,8 @@ import sandbox.runtime.Recorder;
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,6 +35,9 @@ public class Transformer implements ClassFileTransformer {
                             Class<?> cls,
                             ProtectionDomain protectionDomain,
                             byte[] origBytes) {
+
+        Map<String, BasicBlocksRecord> methodBasicBlocksMap;
+
         Recorder.disabled.enable();
         //Recorder.disabled_cl.enable();
         //Recorder.disabled_ic.enable();
@@ -42,19 +47,26 @@ public class Transformer implements ClassFileTransformer {
          * Not sure why all these guys need to be skipped, but they cause
          * red words to appear if they're not. Ideally we would figure out why.
          */
-        System.out.println("Transforming " + className);
+        if (sandbox.Compiler.VERBOSE) {
+          System.out.println("Transforming " + className);
+        }
         if (className.startsWith("java/lang/Shutdown") ||
                 className.startsWith("java/lang/Thread") ||
                 className.startsWith("sun/security/provider/PolicyFile$PolicyEntry") ||
                 className.startsWith("sandbox/")) {
-            System.out.println("Skipping");
+            if (sandbox.Compiler.VERBOSE) {
+              System.out.println("Skipping");
+            }
             return origBytes;
         }
 
+        /* Instantiate method basic blocks hashmap for this class */
+        methodBasicBlocksMap = new HashMap<String, BasicBlocksRecord>();
+
         /* First pass instrumentation */
-        instrument(origBytes, loader);
+        instrument(origBytes, loader, methodBasicBlocksMap);
         /* Second pass instrumentation */
-        byte[] result = instrument(origBytes, loader);
+        byte[] result = instrument(origBytes, loader, methodBasicBlocksMap);
         Recorder.disabled.disable();
         //Recorder.disabled_cl.disable();
         //Recorder.disabled_ic.disable();
@@ -70,11 +82,11 @@ public class Transformer implements ClassFileTransformer {
      * @param originalBytes the original <code>byte[]</code> code.
      * @return the instrumented <code>byte[]</code> code.
      */
-    private static byte[] instrument(byte[] originalBytes, ClassLoader loader) {
+    private static byte[] instrument(byte[] originalBytes, ClassLoader loader, Map<String, BasicBlocksRecord> methodBasicBlocksMap) {
         try {
 
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-            ClassAdapter adapter = new ClassAdapter(cw);
+            ClassAdapter adapter = new ClassAdapter(cw, methodBasicBlocksMap);
             ClassReader cr = new ClassReader(originalBytes);
             cr.accept(adapter, ClassReader.SKIP_FRAMES);
 
@@ -82,12 +94,12 @@ public class Transformer implements ClassFileTransformer {
 
             return output;
         } catch (RuntimeException e) {
-            System.out.println("Failed to instrument class: " + e);
-            e.printStackTrace();
+            //System.out.println("Failed to instrument class: " + e);
+            //e.printStackTrace();
             throw e;
         } catch (Error e) {
-            System.out.println("Failed to instrument class: " + e);
-            e.printStackTrace();
+            //System.out.println("Failed to instrument class: " + e);
+            //e.printStackTrace();
             throw e;
         }
     }

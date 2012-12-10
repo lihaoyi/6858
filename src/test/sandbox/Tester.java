@@ -8,7 +8,6 @@ import sandbox.classloader.MyClassLoader;
 
 import sandbox.runtime.Account;
 import sandbox.runtime.Recorder;
-import sandbox.runtime.ResourceLimitException;
 
 import java.io.File;
 import java.io.FileReader;
@@ -19,11 +18,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 public class Tester {
-
-
     public static void main(String[] args) throws Exception {
 
-	final String classname = "Scripts";
+	final String classname = "HelloWorld";
 
         System.out.println("Loading Source...");
         final String sourceCode = loadFile("resources/"+classname+".java");
@@ -37,26 +34,21 @@ public class Tester {
             put(classname, byteCode);
         }});
 
-        System.setProperty("java.security.policy", "resources/"+classname+".policy");
+        System.setProperty("java.security.policy", "resources/Test.policy");
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }
 
+
         System.out.println("Executing Code...");
         System.out.println("============================================");
 
-        Object key = Account.get().push(500000, 500000L);
+        Object key = Account.get().push(500000, 50000000L);
         Account.bcl = bcl; // TODO(TFK): Remove this hack.
 
         Class c = bcl.loadClass(classname);
         Method m = c.getMethod("main");
-
-        String result;
-        try{
-            result = (String) m.invoke(null);
-        }catch(ResourceLimitException e){
-            result = "HE RAN OUT OF CODEZ";
-        }
+        String result = (String) m.invoke(null);
 
         System.out.println("RESULT: " + result);
 

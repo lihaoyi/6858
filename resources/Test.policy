@@ -1,0 +1,15 @@
+grant {
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.security.provider";
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.org.mozilla.javascript.internal";
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.org.mozilla.javascript.internal.ast";
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.org.mozilla.javascript.internal.xml";
+
+    permission java.net.SocketPermission "fake_good_address:4444", "connect, resolve";
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.net";
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.security.action";
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.net.spi";
+    permission java.lang.RuntimePermission "accessclassInPackage.sun.security.provider";
+
+    permission java.io.FilePermission "good_file.txt", "write";
+};
+
