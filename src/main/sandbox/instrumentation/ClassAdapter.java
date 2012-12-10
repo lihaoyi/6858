@@ -74,7 +74,10 @@ public class ClassAdapter extends org.objectweb.asm.ClassVisitor {
                 exceptions
         );
 
-        String methodID = this.name + access + base + desc + signature + exceptions;
+        String methodID = this.name + access + base + desc + signature;
+        for (String e : exceptions) {
+            methodID += e;
+        }
 
         JSRInlinerAdapter jia = new JSRInlinerAdapter(mv, access, base, desc, signature, exceptions);
 
