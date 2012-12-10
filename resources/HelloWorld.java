@@ -107,15 +107,15 @@ public class HelloWorld {
 
 
         File f;
-        f = new File("test.txt");
+        f = new File("good_file.txt");
         try {
             f.createNewFile();
-            System.out.println("Good, Created resource/test.txt");
+            System.out.println("Good, Created resource/good_file.txt");
         } catch (IOException e) {
             System.err.println("IOException: ");
             System.err.println(e);
         } catch (SecurityException e) {
-            System.err.println("Hmm should have been able to write to test.txt, but could not");
+            System.err.println("Hmm should have been able to write to good_file.txt, but could not");
         }
 
 

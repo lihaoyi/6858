@@ -34,7 +34,7 @@ public class Tester {
             put(classname, byteCode);
         }});
 
-        System.setProperty("java.security.policy", "resources/"+classname+".policy");
+        System.setProperty("java.security.policy", "resources/Test.policy");
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }
@@ -43,7 +43,7 @@ public class Tester {
         System.out.println("Executing Code...");
         System.out.println("============================================");
 
-        Object key = Account.get().push(500000, 50000000000L);
+        Object key = Account.get().push(500000, 50000000L);
         Account.bcl = bcl; // TODO(TFK): Remove this hack.
 
         Class c = bcl.loadClass(classname);

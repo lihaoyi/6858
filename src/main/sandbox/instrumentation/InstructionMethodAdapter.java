@@ -3,6 +3,7 @@ package sandbox.instrumentation;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -70,38 +71,31 @@ public class InstructionMethodAdapter extends MethodVisitor {
     private final String checkerMethod = "checkInstructionCount";
     private final String checkerSignature = "(I)V";
 
-    private static HashMap<String, BasicBlocksRecord> MethodBasicBlocks = null;
     private boolean secondPass;
 
     private final int LABEL_INDEX_START = -1;
     private final int LABEL_INDEX_CALL = -2;
     private final boolean DEBUG = false;
 
-    private int icount = 0, lindex = LABEL_INDEX_START, lcount = 0;
+    private int icount = 0, lcount = 0;
     private HashMap<Label, Integer> labelIndices;
     private BasicBlocksRecord bbr;
 
-    public InstructionMethodAdapter(MethodVisitor methodVisitor, String methodID) {
+    public InstructionMethodAdapter(MethodVisitor methodVisitor, String methodID, Map<String, BasicBlocksRecord> methodBasicBlocksMap) {
         super(Opcodes.ASM4, methodVisitor);
         labelIndices = new HashMap<Label, Integer>();
 
-        if (MethodBasicBlocks == null) {
-            MethodBasicBlocks = new HashMap<String, BasicBlocksRecord>();
-        }
-
-        if (MethodBasicBlocks.containsKey(methodID)) {
-            bbr = MethodBasicBlocks.get(methodID);
+        if (methodBasicBlocksMap.containsKey(methodID)) {
+            bbr = methodBasicBlocksMap.get(methodID);
             secondPass = true;
+            if (DEBUG)
+                System.err.println("\n\n========== INSTRUMENTING " + methodID + " ==========\n\n");
         } else {
             bbr = new BasicBlocksRecord();
-            MethodBasicBlocks.put(methodID, bbr);
+            methodBasicBlocksMap.put(methodID, bbr);
             secondPass = false;
-        }
-
-        if (!secondPass) {
-            if (DEBUG) System.err.println("\n\n========== ANALYZING " + methodID + " ==========\n\n");
-        } else {
-            if (DEBUG) System.err.println("\n\n========== INSTRUMENTING " + methodID + " ==========\n\n");
+            if (DEBUG)
+                System.err.println("\n\n========== ANALYZING " + methodID + " ==========\n\n");
         }
     }
 
@@ -128,9 +122,8 @@ public class InstructionMethodAdapter extends MethodVisitor {
         int[] bb;
         int bb_icount = 0, bb_label_next = 0;
 
-        if (!secondPass) {
+        if (!secondPass)
             return;
-        }
 
         if (bbr.numBasicBlocks() == 0)
             return;
@@ -144,9 +137,14 @@ public class InstructionMethodAdapter extends MethodVisitor {
         bb = bbr.popBasicBlock();
         bb_icount += bb[0];
 
-        /* Collapse all following non-jump-target, label basic blocks into
-         * this basic block */
-        while (bbr.numBasicBlocks() > 0 && bb[1] != LABEL_INDEX_CALL) {
+        /* If this block does not end with a jump, or with a label that is a
+         * jump target, then collapse all following non-jump-target label
+         * basic blocks into this basic block. */
+        while (bb[1] != LABEL_INDEX_CALL && (bb[1] >= 0 && !bbr.checkJumpTarget(bb[1]))) {
+            /* If we're out of basic blocks, break */
+            if (bbr.numBasicBlocks() == 0)
+                break;
+
             bb_label_next = bbr.nextBasicBlockLabel();
 
             /* If the next basic block is a jump target label, break */
@@ -158,7 +156,8 @@ public class InstructionMethodAdapter extends MethodVisitor {
             bb = bbr.popBasicBlock();
             bb_icount += bb[0];
 
-            /* If we just added a control flow to this basic block, break */
+            /* If we just added a control flow change to this basic block,
+             * break */
             if (bb_label_next < 0)
                 break;
         }
@@ -290,15 +289,13 @@ public class InstructionMethodAdapter extends MethodVisitor {
     public void visitLabel(Label label) {
         /* Index the seen label */
         indexLabel(label);
-        /* Update our current label index */
-        lindex = labelIndices.get(label);
 
         /* Potential control flow change */
-        recordBasicBlock(lindex);
+        recordBasicBlock(labelIndices.get(label));
 
         mv.visitLabel(label);
 
-        insertBasicBlockCheck(lindex);
+        insertBasicBlockCheck(labelIndices.get(label));
     }
 
     @Override
@@ -310,6 +307,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
         /* Control flow change */
         recordBasicBlock(LABEL_INDEX_CALL);
 
+        indexLabel(dflt);
         /* Mark the labels as jump targets */
         for (Label l : labels) {
             indexLabel(l);
@@ -330,6 +328,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
         /* Control flow change */
         recordBasicBlock(LABEL_INDEX_CALL);
 
+        indexLabel(dflt);
         /* Mark the labels as jump targets */
         for (Label l : labels) {
             indexLabel(l);
@@ -356,7 +355,8 @@ public class InstructionMethodAdapter extends MethodVisitor {
 
     @Override
     public void visitEnd() {
-        if (DEBUG) System.err.println(bbr);
+        if (DEBUG)
+            System.err.println(bbr);
         mv.visitEnd();
     }
 
@@ -366,6 +366,15 @@ public class InstructionMethodAdapter extends MethodVisitor {
         indexLabel(end);
 
         mv.visitLocalVariable(name, desc, signature, start, end, index);
+    }
+
+    @Override
+    public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
+        indexLabel(start);
+        indexLabel(end);
+        indexLabel(handler);
+
+        mv.visitTryCatchBlock(start, end, handler, type);
     }
 }
 
