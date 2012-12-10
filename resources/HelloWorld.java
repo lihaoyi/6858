@@ -119,14 +119,14 @@ public class HelloWorld {
         }
 
 
-        java.util.Date d = new Date();
+    /*    java.util.Date d = new Date();
 
         // this should throw an exception
         try {
             java.util.jar.Attributes e = new Attributes();
         } catch (Error e) {
         }
-
+*/
         if (output == null) return "Success! Nothing broke";
         else return output;
     }

@@ -18,13 +18,6 @@ import java.util.jar.Attributes;
 public class Scripts {
     public static String main() throws Exception {
 
-//        PythonInterpreter p = new PythonInterpreter();
-//        p.exec("x = 10");
-//        ScriptingContainer container = new ScriptingContainer(LocalVariableBehavior.PERSISTENT);
-//        container.runScriptlet("p=0.9");
-//        container.runScriptlet("x=[0.9] * 10000000000");
-//        container.runScriptlet("nil while true");
-
         ScriptEngineManager engineMgr = new ScriptEngineManager();
         ScriptEngine engine = engineMgr.getEngineByName("JavaScript");
         Bindings bindings = engine.createBindings();
@@ -34,8 +27,6 @@ public class Scripts {
         bindings.put("moo", 20);
 
         Object obj = engine.eval(script, bindings);
-
-        //container.runScriptlet("x = 'a' * 1000000; puts 'Ruby ' + File.read('.gitignore')");
 
         return "Success! Nothing broke" + obj;
     }
