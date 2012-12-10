@@ -20,7 +20,7 @@ class BasicBlocksRecord {
     /* Boundary indicating the start of a method */
     public final static int BOUNDARY_START = -1;
     /* Boundary indicating a flow control change (e.g. an invoke or branch) */
-    public final static int BOUNDARY_FLOW_CONTROL = -2;
+    public final static int BOUNDARY_CONTROL_FLOW = -2;
 
     /* Initialize the underlying data structure */
     public BasicBlocksRecord() {
@@ -174,26 +174,17 @@ public class InstructionMethodAdapter extends MethodVisitor {
         /* If this block does not end with a control flow change, or with a
          * label that is a jump target,
          *
-         * then collapse all following non-jump-target-label boundary basic
-         * blocks into this basic block. */
-        while (bb_boundary != BasicBlocksRecord.BOUNDARY_FLOW_CONTROL && (bbr.boundaryIsLabel(bb_boundary) && !bbr.checkJumpTarget(bb_boundary))) {
+         * then collapse all following non-control-flow and
+         * non-jump-target-label boundary basic blocks into this basic block. */
+        while (bb_boundary != BasicBlocksRecord.BOUNDARY_CONTROL_FLOW && (bbr.boundaryIsLabel(bb_boundary) && !bbr.checkJumpTarget(bb_boundary))) {
             /* If we're out of basic blocks, break */
             if (bbr.numBasicBlocks() == 0)
                 break;
 
-            /* If the next basic block boundary is a jump target label, break */
-            bb_boundary = bbr.peekNextBasicBlockBoundary();
-            if (bbr.boundaryIsLabel(bb_boundary) && bbr.checkJumpTarget(bb_boundary))
-                break;
-
-            /* Incorporate its instruction count into this basic block */
+            /* Incorporate the instruction count of the next basic block */
             bb = bbr.popBasicBlock();
             bb_icount += bb[0];
-
-            /* If we just added a control flow change to this basic block,
-             * break */
-            if (bb_boundary == BasicBlocksRecord.BOUNDARY_FLOW_CONTROL)
-                break;
+            bb_boundary = bb[1];
         }
 
         /* If this compressed basic block contains instructions, drop a
@@ -212,7 +203,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
         if (opcode == Opcodes.IRETURN || opcode == Opcodes.LRETURN ||
                 opcode == Opcodes.FRETURN || opcode == Opcodes.DRETURN ||
                 opcode == Opcodes.ARETURN || opcode == Opcodes.RETURN) {
-            recordBasicBlock(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
+            recordBasicBlock(BasicBlocksRecord.BOUNDARY_CONTROL_FLOW);
         }
         mv.visitInsn(opcode);
 
@@ -220,7 +211,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
         if (opcode == Opcodes.IRETURN || opcode == Opcodes.LRETURN ||
                 opcode == Opcodes.FRETURN || opcode == Opcodes.DRETURN ||
                 opcode == Opcodes.ARETURN || opcode == Opcodes.RETURN) {
-            insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
+            insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_CONTROL_FLOW);
         }
     }
 
@@ -239,13 +230,13 @@ public class InstructionMethodAdapter extends MethodVisitor {
 
         /* Control flow change */
         if (opcode == Opcodes.RET) {
-            recordBasicBlock(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
+            recordBasicBlock(BasicBlocksRecord.BOUNDARY_CONTROL_FLOW);
         }
         mv.visitVarInsn(opcode, var);
 
         /* Insert an instructions check after a control flow change */
         if (opcode == Opcodes.RET) {
-            insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
+            insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_CONTROL_FLOW);
         }
     }
 
@@ -273,12 +264,12 @@ public class InstructionMethodAdapter extends MethodVisitor {
         icount += 1;
 
         /* Control flow change */
-        recordBasicBlock(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
+        recordBasicBlock(BasicBlocksRecord.BOUNDARY_CONTROL_FLOW);
 
         mv.visitMethodInsn(opcode, owner, name, desc);
 
         /* Insert an instructions check after a control flow change */
-        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
+        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_CONTROL_FLOW);
     }
 
     @Override
@@ -288,12 +279,12 @@ public class InstructionMethodAdapter extends MethodVisitor {
         icount += 1;
 
         /* Control flow change */
-        recordBasicBlock(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
+        recordBasicBlock(BasicBlocksRecord.BOUNDARY_CONTROL_FLOW);
 
         mv.visitInvokeDynamicInsn(name, desc, bsm, bsmArgs);
 
         /* Insert an instructions check after a control flow change */
-        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
+        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_CONTROL_FLOW);
     }
 
     @Override
@@ -305,7 +296,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
         icount += 1;
 
         /* Control flow change */
-        recordBasicBlock(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
+        recordBasicBlock(BasicBlocksRecord.BOUNDARY_CONTROL_FLOW);
 
         /* Mark the label as a jump target */
         bbr.markJumpTarget(labelIndices.get(label));
@@ -313,7 +304,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
         mv.visitJumpInsn(opcode, label);
 
         /* Insert an instructions check after a control flow change */
-        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
+        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_CONTROL_FLOW);
     }
 
     @Override
@@ -353,7 +344,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
         icount += 1;
 
         /* Control flow change */
-        recordBasicBlock(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
+        recordBasicBlock(BasicBlocksRecord.BOUNDARY_CONTROL_FLOW);
 
         /* Index the labels, and mark jump target labels */
         indexLabel(dflt);
@@ -365,7 +356,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
         mv.visitTableSwitchInsn(min, max, dflt, labels);
 
         /* Insert an instructions check after a control flow change */
-        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
+        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_CONTROL_FLOW);
     }
 
     @Override
@@ -375,7 +366,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
         icount += 1;
 
         /* Control flow change */
-        recordBasicBlock(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
+        recordBasicBlock(BasicBlocksRecord.BOUNDARY_CONTROL_FLOW);
 
         /* Index the labels, and mark jump target labels */
         indexLabel(dflt);
@@ -387,7 +378,7 @@ public class InstructionMethodAdapter extends MethodVisitor {
         mv.visitLookupSwitchInsn(dflt, keys, labels);
 
         /* Insert an instructions check after a control flow change */
-        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_FLOW_CONTROL);
+        insertBasicBlockCheck(BasicBlocksRecord.BOUNDARY_CONTROL_FLOW);
     }
 
     @Override
@@ -426,8 +417,11 @@ public class InstructionMethodAdapter extends MethodVisitor {
     public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
         /* Index the labels */
         indexLabel(start);
+        bbr.markJumpTarget(labelIndices.get(start));
         indexLabel(end);
+        bbr.markJumpTarget(labelIndices.get(end));
         indexLabel(handler);
+        bbr.markJumpTarget(labelIndices.get(handler));
 
         mv.visitTryCatchBlock(start, end, handler, type);
     }
