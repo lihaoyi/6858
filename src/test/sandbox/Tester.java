@@ -34,7 +34,7 @@ public class Tester {
             put(classname, byteCode);
         }});
 
-        System.setProperty("java.security.policy", "resources/"+classname+".policy");
+        System.setProperty("java.security.policy", "resources/Test.policy");
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }

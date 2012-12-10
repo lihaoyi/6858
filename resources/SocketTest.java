@@ -48,6 +48,6 @@ public class SocketTest {
 	}
 
  
-	return "SocketTest passes!";
+	return "SocketTest complete!";
     }
 }
