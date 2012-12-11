@@ -27,7 +27,7 @@ public class Compiler {
             jfiles.add(new CharSequenceJavaFileObject(fullName, src));
     
             List<String> options = new ArrayList<String>();
-            options.add("-g:none");
+            //options.add("-g:none");
             compiler.getTask(null, fileManager, null, options, null, jfiles).call();
             return fileManager.getBytes();
         } catch (Throwable e) {
