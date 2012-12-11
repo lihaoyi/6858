@@ -74,9 +74,12 @@ public class ClassAdapter extends org.objectweb.asm.ClassVisitor {
                 exceptions
         );
 
+        /* Build a unique methodID */
         String methodID = this.name + access + base + desc + signature;
-        for (String e : exceptions) {
-            methodID += e;
+        if (exceptions != null) {
+            for (String e : exceptions) {
+                methodID += e;
+            }
         }
 
         JSRInlinerAdapter jia = new JSRInlinerAdapter(mv, access, base, desc, signature, exceptions);
