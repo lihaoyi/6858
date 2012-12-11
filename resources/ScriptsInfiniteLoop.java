@@ -18,8 +18,8 @@ public class ScriptsInfiniteLoop {
         String script =
                 "(function(){" +
                     "var x = 2; " +
-                    "while(x > 0){" +
-                      "x = x + 1" + //  "y.push(1);}; return cow + moo" +
+                    "while (true) {" +
+                      "x = x + 1" +
                     "}" +
                 "})()";
         engine.eval(script);
