@@ -18,21 +18,21 @@ public class JavaAgent {
     }
 
     public static void premain(String agentArgs, Instrumentation inst) {
-        System.out.println("Agent Premain Start");
+        System.out.println("Starting Rewriting");
         instrumentation = inst;
         inst.addTransformer(
                 new Transformer(),
                 inst.isRetransformClassesSupported()
         );
         Class<?>[] classes = inst.getAllLoadedClasses();
-        System.out.println(classes.length);
+        //System.out.println(classes.length);
         ArrayList<Class<?>> classList = new ArrayList<Class<?>>();
         for (int i = 0; i < classes.length; i++) {
-            System.out.println(classes[i]);
+            //System.out.println(classes[i]);
             if (inst.isModifiableClass(classes[i])) {
                 classList.add(classes[i]);
             }else{
-                System.out.println("UNMODIFIABLE");
+          //      System.out.println("UNMODIFIABLE");
             }
         }
 
@@ -44,7 +44,7 @@ public class JavaAgent {
             System.err.println("AllocationInstrumenter was unable to " +
                     "retransform early loaded classes.");
         }
-        System.out.println("Agent Premain End");
+        //System.out.println("Agent Premain End");
     }
 
 }

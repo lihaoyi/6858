@@ -59,25 +59,25 @@ public class Account {
     }
 
     public Object push(long subMaxMemory, long subMaxInstructions) {
-        System.out.println("Pushing " + this);
+        //System.out.println("Pushing " + this);
 
         Account newAccount = new Account(subMaxMemory, subMaxInstructions, this);
         current.set(newAccount);
 
-        System.out.println("Pushed " + newAccount);
+        //System.out.println("Pushed " + newAccount);
         return newAccount.key;
     }
 
     public void pop(Object possibleKey) throws Exception {
 
         if (possibleKey == key) {
-            System.out.println("Popping From " + this);
+            //System.out.println("Popping From " + this);
 
             parent.memory.join(memory);
             parent.instructions.join(instructions);
 
             current.set(this.parent);
-            System.out.println("To " + parent);
+            //System.out.println("To " + parent);
         }
     }
 

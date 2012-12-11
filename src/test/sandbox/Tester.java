@@ -33,6 +33,7 @@ public class Tester {
             resultString = "Result: " + m.invoke(null);
         } catch(InvocationTargetException e) {
             resultString = "Caught (unwrapped) " + e.getCause();
+            e.printStackTrace();
         } catch(Exception e) {
             resultString = "Caught " + e.getClass();
         } finally {
@@ -64,7 +65,7 @@ public class Tester {
     }
 
     public static void prepareFile(String className) throws Exception{
-        System.out.println("Preparing " + className);
+        //System.out.println("Preparing " + className);
         classMap.put(
                 className,
                 Compiler.compile(
