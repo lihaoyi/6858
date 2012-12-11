@@ -7,48 +7,44 @@
  */
 public class InfiniteCatch {
     public static String main() throws Exception {
-        double x = 10000;
-        while(true) {
-            x++;
-        }
-        /*try{
+        long x = 0;
+
+        try {
             while(true) x++;
-        }catch(Exception a){
-            try{
+        } catch(Exception a) {
+            try {
                 while(true) x++;
-            }catch(Exception b){
-                try{
+            } catch(Exception b) {
+                try {
                     while(true) x++;
-                }catch(Exception c){
-                    try{
+                } catch(Exception c) {
+                    try {
                         while(true) x++;
-                    }catch(Exception d){
-                        try{
+                    } catch(Exception d) {
+                        try {
                             while(true) x++;
-                        }catch(Exception e){
-                            try{
+                        } catch(Exception e) {
+                            try {
                                 while(true) x++;
-                            }catch(Exception f){
+                            } catch(Exception f) {
                                 return "haha i caught you exception and ran my catch";
-                            }finally{
+                            } finally {
                                 return "haha i caught you exception and ran my finally";
                             }
-                        }finally{
+                        } finally {
                             return "haha i caught you exception and ran my finally";
                         }
-                    }finally{
+                    } finally {
                         return "haha i caught you exception and ran my finally";
                     }
-                }finally{
+                } finally {
                     return "haha i caught you exception and ran my finally";
                 }
-            }finally{
+            } finally {
                 return "haha i caught you exception and ran my finally";
             }
-        }finally{
+        } finally {
             return "haha i caught you exception and ran my finally";
-        }*/
-
-
+        }
     }
 }

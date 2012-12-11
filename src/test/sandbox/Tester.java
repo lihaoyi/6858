@@ -20,6 +20,7 @@ public class Tester {
     static HashMap<String, byte[] > classMap = new HashMap<String, byte[]>();
 
     static MyClassLoader bcl = new MyClassLoader(classMap);
+
     public static String run (final String className, final long maxMemory, final long maxBytecodes) throws Exception{
         System.out.println("================================" + className + "================================");
         Object key = Account.get().push(maxMemory, maxBytecodes);
@@ -40,8 +41,10 @@ public class Tester {
 
         return resultString;
     }
-    public static void main(String[] args) throws Exception {
 
+    public static void main(String[] args) throws Exception {
+        prepareFile("InfiniteLoop");
+        prepareFile("BigInstructionBlock");
         prepareFile("ScriptsInfiniteLoop");
         prepareFile("ScriptsInfiniteMemory");
         prepareFile("InfiniteCatch");
@@ -52,15 +55,14 @@ public class Tester {
             System.setSecurityManager(new SecurityManager());
         }
 
+        System.out.println(run("InfiniteLoop", 50000, 50000));
+        System.out.println(run("BigInstructionBlock", 50000, 10000));
         System.out.println(run("ScriptsInfiniteLoop", Long.MAX_VALUE, 100000));
         System.out.println(run("ScriptsInfiniteMemory", 100000, Long.MAX_VALUE));
-        //System.out.println(run("InfiniteCatch", 50000, 50000));
-	
-	    //System.out.println(run("FileTest", 100000,1000000));
         System.out.println(run("InfiniteCatch", 50000, 50000));
-
-
+	    //System.out.println(run("FileTest", 100000,1000000));
     }
+
     public static void prepareFile(String className) throws Exception{
         System.out.println("Preparing " + className);
         classMap.put(
@@ -71,6 +73,7 @@ public class Tester {
                 )
         );
     }
+
     public static String loadFile(String name) throws Exception {
         Reader input = new FileReader(name);
         StringWriter output = new StringWriter();
@@ -82,6 +85,5 @@ public class Tester {
         String fileContents = output.toString();
         return fileContents;
     }
-
 }
 

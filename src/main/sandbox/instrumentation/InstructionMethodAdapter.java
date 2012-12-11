@@ -10,9 +10,11 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Handle;
 
-/* Data structure wrapper to maintain the instruction counts and boundaries of
+/**
+ * Data structure wrapper to maintain the instruction counts and boundaries of
  * basic instruction blocks, as well which labels are jump targets, for an
- * analyzed jvm bytecode method. */
+ * analyzed jvm bytecode method.
+ */
 class BasicBlocksRecord {
     /* List of instruction counts, boundaries, and jump target labels */
     private List<Integer> bb_icounts, bb_boundaries, jump_targets;
