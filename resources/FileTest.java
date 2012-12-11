@@ -16,23 +16,23 @@ public class FileTest {
         f = new File("good_file.txt");
         try {
             f.createNewFile();
-            System.out.println("Correctly created good_file.txt");
+//            System.out.println("Correctly created good_file.txt");
         } catch (IOException e) {
             System.err.println("IOException: ");
             System.err.println(e);
         } catch (SecurityException e) {
-            System.err.println("Hmm should have been able to write to good_file.txt, but could not");
+//            System.err.println("Hmm should have been able to write to good_file.txt, but could not");
         }
 
         f = new File("bad_file.txt");
         try {
             f.createNewFile();
-            System.out.println("Oh noes! Created bad_file.txt but shouldn't have!");
+//            System.out.println("Oh noes! Created bad_file.txt but shouldn't have!");
         } catch (IOException e) {
             System.err.println("IOException: ");
             System.err.println(e);
         } catch (SecurityException e) {
-            System.err.println("Good! Blocked creation of bad_file.txt");
+//            System.err.println("Good! Blocked creation of bad_file.txt");
         }
 
 	return "FileTest complete";
