@@ -1,9 +1,6 @@
 package sandbox;
 
 import org.apache.commons.io.IOUtils;
-import org.jruby.embed.ScriptingContainer;
-
-import org.python.util.PythonInterpreter;
 import sandbox.classloader.MyClassLoader;
 
 import sandbox.runtime.Account;
@@ -34,7 +31,7 @@ public class Tester {
         } catch(InvocationTargetException e) {
             resultString = "Caught (unwrapped) " + e.getCause();
         } catch(Exception e) {
-            resultString = "Caught " + e.getClass();
+            resultString = "Caught " + e.getCause();
         } finally {
             Account.get().pop(key);
         }
@@ -47,9 +44,9 @@ public class Tester {
         prepareFile("InfiniteMemory");
         prepareFile("BigInstructionBlock");
         prepareFile("ScriptsInfiniteLoop");
-//        prepareFile("ScriptsInfiniteMemory");
-//        prepareFile("InfiniteCatch");
-//	    prepareFile("FileTest");
+        prepareFile("ScriptsInfiniteMemory");
+        prepareFile("InfiniteCatch");
+	    prepareFile("FileTest");
 
         System.setProperty("java.security.policy", "resources/Test.policy");
         if (System.getSecurityManager() == null) {
@@ -61,9 +58,9 @@ public class Tester {
         System.out.println(run("BigInstructionBlock", 50000, 10000));
         System.out.println(run("ScriptsInfiniteLoop", Long.MAX_VALUE, 100000));
 
-//        System.out.println(run("ScriptsInfiniteMemory", 100000, Long.MAX_VALUE));
-//        System.out.println(run("InfiniteCatch", 50000, 50000));
-	    //System.out.println(run("FileTest", 100000,1000000));
+        System.out.println(run("ScriptsInfiniteMemory", 100000, Long.MAX_VALUE));
+        System.out.println(run("InfiniteCatch", 50000, 50000));
+	    System.out.println(run("FileTest", 100000,1000000));
     }
 
     public static void prepareFile(String className) throws Exception{

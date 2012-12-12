@@ -7,9 +7,9 @@ import java.lang.instrument.UnmodifiableClassException;
 import java.util.ArrayList;
 
 /**
- * Stub class to be used as the -javaagent. Does nothing except providing
- * a premain() to be called, and simply stores the Instrumentation object it
- * is passed for someone else to use later
+ * Class to be used as the -javaagent. This adds a Transformer object to
+ * instrument all classes loaded in the future, as well as attempting
+ * to load-instrument-reload all classes that were loaded in the past.
  */
 public class JavaAgent {
     public static Instrumentation instrumentation;

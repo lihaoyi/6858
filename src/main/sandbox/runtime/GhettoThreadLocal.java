@@ -1,5 +1,12 @@
 package sandbox.runtime;
 
+/**
+ * A poor man's implementation of a ThreadLocal variable. This is needed
+ * because normal thread-locals have dependencies on a large number of
+ * other classes, and every single one of those classes will have to be
+ * un-instrumented in order to prevent an infinite recursion (where
+ * the instrumentation calls some method which is itself instrumented)
+ */
 public class GhettoThreadLocal {
     private long[] data = new long[1024];
 

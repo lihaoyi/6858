@@ -2,7 +2,7 @@ package sandbox.classloader;
 
 import sandbox.agent.JavaAgent;
 import sandbox.instrumentation.Transformer;
-import sandbox.lists.WhiteList;
+
 import sandbox.Compiler;
 import java.net.URL;
 import java.net.URLClassLoader;

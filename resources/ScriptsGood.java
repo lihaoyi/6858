@@ -3,10 +3,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 /**
- * This is an infinite loop, but creatd in Javascript using Rhino, rather
- * than in plain Java. Because the JS interpreter also gets instrumented,
- * the infinite loop in interpreting the Javascript also throws a
- * ResourceLimitException to return control back to the trusted code.
+ * This is a benign script that does not try to do anything nasty, and
+ * should execute fine.
  */
 public class ScriptsGood {
     public static String main() throws Exception {
@@ -21,8 +19,9 @@ public class ScriptsGood {
                     "while (x < 3) {" +
                       "x = x + 1" +
                     "}" +
+                    "return x" +
                 "})()";
-        engine.eval(script);
-        return "ScriptsGood returns correctly!";
+
+        return "ScriptsGood returns correctly! " + engine.eval(script);
     }
 }

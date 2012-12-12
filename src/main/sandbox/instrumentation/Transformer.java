@@ -14,18 +14,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class which maintains static state (e.g. storing the javaagent's
- * sandbox.instrumentation object and transformMe map) and provides instances
- * which can be used by the sandbox.instrumentation to transform loaded classes
+ * This is the class which actually performs the Instrumentation of the
+ * Java bytecode using ASM. It is activated in sandbox.agent.JavaAgent
  */
 public class Transformer implements ClassFileTransformer {
-
-    /**
-     * Register the transformer with the Instrumentation object, just once,
-     * when the class is initially loaded.
-     */
-
-
     public Transformer() {
     }
 
@@ -47,14 +39,13 @@ public class Transformer implements ClassFileTransformer {
          * Not sure why all these guys need to be skipped, but they cause
          * red words to appear if they're not. Ideally we would figure out why.
          */
-
-
         if (className.startsWith("java/lang/Shutdown") ||
-            className.startsWith("java/lang/Thread") ||
-            className.startsWith("sun/security/provider/PolicyFile$PolicyEntry") ||
-            className.startsWith("sandbox/") ||
-            className.startsWith("com/sun/tools") ||
-            className.startsWith("com/sun/source")) {
+            className.startsWith("java/lang/Thread") || // needed to prevent infinite recursion, due to usage of .currentThread()
+            className.startsWith("sun/security/provider/PolicyFile$PolicyEntry") || // this seems to take forever
+            className.startsWith("sandbox/") || // don't want to instrument ourselves to avoid infinite recursion
+            className.startsWith("com/sun/tools") || // to make the initial compilation faster
+            className.startsWith("com/sun/source")// to make the initial compilation faster
+        ) {
 
             if (sandbox.Compiler.VERBOSE) {
               System.out.println("Skipping");

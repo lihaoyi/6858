@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.Attributes;
 
-import org.jruby.embed.ScriptingContainer;
-import org.python.util.PythonInterpreter;
 import sandbox.runtime.Account;
 public class FileTest {
     public static String main() {
