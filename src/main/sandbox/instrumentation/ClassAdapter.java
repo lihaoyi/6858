@@ -11,7 +11,8 @@ import java.util.HashMap;
 
 /**
  * In charge of instrumenting an entire class. Does nothing but hand off the
- * instrumenting of individual methods to MemoryMethodAdapter objects
+ * instrumenting of individual methods to MemoryMethodAdapter and
+ * InstructionMethodAdapter objects
  */
 public class ClassAdapter extends org.objectweb.asm.ClassVisitor {
     public static Map<String, Integer> fieldCountMap;
