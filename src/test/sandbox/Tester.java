@@ -14,23 +14,23 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 public class Tester {
-    static HashMap<String, byte[] > classMap = new HashMap<String, byte[]>();
+    static HashMap<String, byte[]> classMap = new HashMap<String, byte[]>();
 
     static MyClassLoader bcl = new MyClassLoader(classMap);
 
-    public static String run (final String className, final long maxMemory, final long maxBytecodes) throws Exception{
+    public static String run(final String className, final long maxMemory, final long maxBytecodes) throws Exception {
         System.out.println("================================" + className + "================================");
         Object key = Account.get().push(maxMemory, maxBytecodes);
         Account.bcl = bcl; // TODO(TFK): Remove this hack.
         String resultString = "";
-        try{
+        try {
             Class c = bcl.loadClass(className);
             Method m = c.getMethod("main");
 
             resultString = "Result: " + m.invoke(null);
-        } catch(InvocationTargetException e) {
+        } catch (InvocationTargetException e) {
             resultString = "Caught (unwrapped) " + e.getCause();
-        } catch(Exception e) {
+        } catch (Exception e) {
             resultString = "Caught " + e.getCause();
         } finally {
             Account.get().pop(key);
@@ -46,13 +46,13 @@ public class Tester {
         prepareFile("ScriptsInfiniteLoop");
         prepareFile("ScriptsInfiniteMemory");
         prepareFile("InfiniteCatch");
-	    prepareFile("FileTest");
+        prepareFile("FileTest");
 
         System.setProperty("java.security.policy", "resources/Test.policy");
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }
-        System.out.println(run("FileTest", 100000,1000000));
+        System.out.println(run("FileTest", 100000, 1000000));
         System.out.println(run("InfiniteLoop", 50000, 50000));
         System.out.println(run("InfiniteMemory", 100000, 100000));
         System.out.println(run("BigInstructionBlock", 50000, 10000));
@@ -63,7 +63,7 @@ public class Tester {
 
     }
 
-    public static void prepareFile(String className) throws Exception{
+    public static void prepareFile(String className) throws Exception {
         //System.out.println("Preparing " + className);
         classMap.put(
                 className,

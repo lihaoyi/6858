@@ -4,6 +4,7 @@ import sandbox.agent.JavaAgent;
 import sandbox.instrumentation.Transformer;
 
 import sandbox.Compiler;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class MyClassLoader extends URLClassLoader {
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
         if (Compiler.VERBOSE) {
-          System.out.println("Loading " + name);
+            System.out.println("Loading " + name);
         }
         if (this.findLoadedClass(name) != null) {
             return this.findLoadedClass(name);

@@ -185,7 +185,7 @@ public class MemoryMethodAdapter extends MethodVisitor {
             // Not allowed to touch the object yet.
             // Use a trick from java-allocation-instrumentor
             // and increment a count.
-            nonInitializedAllocations++; 
+            nonInitializedAllocations++;
         } else if (opcode == Opcodes.ANEWARRAY) {
             // ... len
             checkProposedLengthDebug(typeNameToInt(typeName));

@@ -31,8 +31,8 @@ public class JavaAgent {
             //System.out.println(classes[i]);
             if (inst.isModifiableClass(classes[i])) {
                 classList.add(classes[i]);
-            }else{
-          //      System.out.println("UNMODIFIABLE");
+            } else {
+                //      System.out.println("UNMODIFIABLE");
             }
         }
 

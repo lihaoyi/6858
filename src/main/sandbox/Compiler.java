@@ -20,12 +20,12 @@ public class Compiler {
     public static byte[] compile(String fullName, String src) throws Exception {
         try {
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-    
+
             ClassFileManager fileManager = new ClassFileManager(compiler.getStandardFileManager(null, null, null));
-    
+
             List<JavaFileObject> jfiles = new ArrayList<JavaFileObject>();
             jfiles.add(new CharSequenceJavaFileObject(fullName, src));
-    
+
             List<String> options = new ArrayList<String>();
             //options.add("-g:none");
             compiler.getTask(null, fileManager, null, options, null, jfiles).call();

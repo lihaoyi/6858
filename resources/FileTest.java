@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.Attributes;
 
 import sandbox.runtime.Account;
+
 public class FileTest {
     public static String main() {
 
@@ -33,7 +34,7 @@ public class FileTest {
 //            System.err.println("Good! Blocked creation of bad_file.txt");
         }
 
-	return "FileTest complete";
+        return "FileTest complete";
 
     }
 }

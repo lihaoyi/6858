@@ -40,15 +40,15 @@ public class Transformer implements ClassFileTransformer {
          * red words to appear if they're not. Ideally we would figure out why.
          */
         if (className.startsWith("java/lang/Shutdown") ||
-            className.startsWith("java/lang/Thread") || // needed to prevent infinite recursion, due to usage of .currentThread()
-            className.startsWith("sun/security/provider/PolicyFile$PolicyEntry") || // this seems to take forever
-            className.startsWith("sandbox/") || // don't want to instrument ourselves to avoid infinite recursion
-            className.startsWith("com/sun/tools") || // to make the initial compilation faster
-            className.startsWith("com/sun/source")// to make the initial compilation faster
-        ) {
+                className.startsWith("java/lang/Thread") || // needed to prevent infinite recursion, due to usage of .currentThread()
+                className.startsWith("sun/security/provider/PolicyFile$PolicyEntry") || // this seems to take forever
+                className.startsWith("sandbox/") || // don't want to instrument ourselves to avoid infinite recursion
+                className.startsWith("com/sun/tools") || // to make the initial compilation faster
+                className.startsWith("com/sun/source")// to make the initial compilation faster
+                ) {
 
             if (sandbox.Compiler.VERBOSE) {
-              System.out.println("Skipping");
+                System.out.println("Skipping");
             }
             return origBytes;
         }

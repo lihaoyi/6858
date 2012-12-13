@@ -10,23 +10,23 @@ public class InfiniteCatch {
         long x = 0;
 
         try {
-            while(true) x++;
-        } catch(Exception a) {
+            while (true) x++;
+        } catch (Exception a) {
             try {
-                while(true) x++;
-            } catch(Exception b) {
+                while (true) x++;
+            } catch (Exception b) {
                 try {
-                    while(true) x++;
-                } catch(Exception c) {
+                    while (true) x++;
+                } catch (Exception c) {
                     try {
-                        while(true) x++;
-                    } catch(Exception d) {
+                        while (true) x++;
+                    } catch (Exception d) {
                         try {
-                            while(true) x++;
-                        } catch(Exception e) {
+                            while (true) x++;
+                        } catch (Exception e) {
                             try {
-                                while(true) x++;
-                            } catch(Exception f) {
+                                while (true) x++;
+                            } catch (Exception f) {
                                 return "haha i caught you exception and ran my catch";
                             } finally {
                                 return "haha i caught you exception and ran my finally";

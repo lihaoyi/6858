@@ -100,7 +100,7 @@ public class HelloWorld {
         // Test memory reclaiming on garbage collection.
         // This should not run out of memory when garbage reclaiming is on.
         for (int i = 0; i < 100000; i++) {
-          s = new String();        
+            s = new String();
         }
 
 

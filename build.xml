@@ -1,13 +1,13 @@
 <project name="jvmsandbox">
-    <property name="src.dir"     value="src"/>
-    <property name="lib.dir"     value="lib"/>
-    <property name="build.dir"   value="build"/>
+    <property name="src.dir" value="src"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="build.dir" value="build"/>
 
     <property name="classes.dir" value="${build.dir}/classes"/>
-    <property name="jar.dir"     value="${build.dir}/jar"/>
+    <property name="jar.dir" value="${build.dir}/jar"/>
 
-    <property name="jar.name"    value="Tester.jar"/>
-    <property name="main-class"  value="sandbox.Tester"/>
+    <property name="jar.name" value="Tester.jar"/>
+    <property name="main-class" value="sandbox.Tester"/>
 
     <path id="classpath">
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -25,25 +25,26 @@
     <target name="jar" depends="compile">
         <mkdir dir="${jar.dir}"/>
         <jar destfile="${jar.dir}/${jar.name}" basedir="${classes.dir}">
-		<manifest>
-			<attribute name="Manifest-Version" value="1.0"/>
-			<attribute name="Boot-Class-Path" value="./${jar.name} ../../${lib.dir}/asm-all-4.0.jar ../../${lib.dir}/jython.jar ../../${lib.dir}/jruby.jar ../../${lib.dir}/commons-io-2.1.jar"/>
-			<attribute name="Premain-Class" value="sandbox.agent.JavaAgent"/>
-			<attribute name="Can-Redefine-Classes" value="true"/>
-			<attribute name="Can-Retransform-Classes" value="true"/>
-            <attribute name="Can-Set-Native-Method-Prefix" value="true"/>
-			<attribute name="Main-Class" value="${main-class}"/>
-		</manifest>
-	</jar>
+            <manifest>
+                <attribute name="Manifest-Version" value="1.0"/>
+                <attribute name="Boot-Class-Path"
+                           value="./${jar.name} ../../${lib.dir}/asm-all-4.0.jar ../../${lib.dir}/jython.jar ../../${lib.dir}/jruby.jar ../../${lib.dir}/commons-io-2.1.jar"/>
+                <attribute name="Premain-Class" value="sandbox.agent.JavaAgent"/>
+                <attribute name="Can-Redefine-Classes" value="true"/>
+                <attribute name="Can-Retransform-Classes" value="true"/>
+                <attribute name="Can-Set-Native-Method-Prefix" value="true"/>
+                <attribute name="Main-Class" value="${main-class}"/>
+            </manifest>
+        </jar>
     </target>
 
     <target name="run" depends="jar">
         <java fork="true" classname="${main-class}">
-	    <jvmarg value="-javaagent:${jar.dir}/${jar.name}"/>
+            <jvmarg value="-javaagent:${jar.dir}/${jar.name}"/>
             <classpath>
                 <path refid="classpath"/>
                 <path location="${jar.dir}/${jar.name}"/>
             </classpath>
-	</java>
+        </java>
     </target>
 </project>
