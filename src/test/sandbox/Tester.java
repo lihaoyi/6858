@@ -64,13 +64,13 @@ public class Tester {
         } catch (Exception e) {
           System.out.println("PASSED - Expected exception caught.");
         }
-	System.out.println(run("ScriptsGood", 100000000, 100000000));
 	System.out.println(run("SocketTest", 100000, 10000000));
         System.out.println(run("FileTest", 100000, 1000000));
         System.out.println(run("InfiniteLoop", 50000, 50000));
         System.out.println(run("InfiniteMemory", 100000, 100000));
         System.out.println(run("BigInstructionBlock", 50000, 10000));
         System.out.println(run("ScriptsInfiniteLoop", Long.MAX_VALUE, 100000));
+	System.out.println(run("ScriptsGood", 100000000, 100000000));
 
         //System.out.println(run("ScriptsInfiniteMemory", 100000, Long.MAX_VALUE));
 //        System.out.println(run("InfiniteCatch", 50000, 50000));
