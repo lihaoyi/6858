@@ -11,8 +11,6 @@ The bulk of the functionality is in code is in [src/sandbox](6858/tree/master/sr
 - [src/test/sandbox](6858/tree/master/src/test/sandbox) contains the test script which runs the unit tests and exercises the functionality of the sandbox
 - [resources](6858/tree/master/resources) contains the Java source files for our demo applications which are exercised by our tests and referenced in our report.
 
-The test cases, which are Java source files which get compiled-on-the-fly executed within the sandbox, are in [resources](6858/tree/master/resources)
-
 The test cases can be run using [Apache Ant](http://ant.apache.org/), via `ant run`.
 
 
