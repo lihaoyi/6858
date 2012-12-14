@@ -49,6 +49,8 @@ public class Tester {
         prepareFile("FileTest");
 	prepareFile("SocketTest");
 	prepareFile("ScriptsGood");
+	prepareFile("GarbageCollectionPass");
+	prepareFile("GarbageCollectionFail");
 
         System.setProperty("java.security.policy", "resources/Test.policy");
         if (System.getSecurityManager() == null) {
@@ -61,9 +63,17 @@ public class Tester {
         System.out.println(run("InfiniteMemory", 100000, 100000));
         System.out.println(run("BigInstructionBlock", 50000, 10000));
         System.out.println(run("ScriptsInfiniteLoop", Long.MAX_VALUE, 100000));
+        System.out.println(run("GarbageCollectionPass", 1000000, Long.MAX_VALUE));
+        try {
+          // We expect this to fail with a ResourceLimitException
+          System.out.println(run("GarbageCollectionFail", 1000000, Long.MAX_VALUE));
+          System.out.println("FAILED - Expected ResourceLimitException");
+        } catch (Exception e) {
+          System.out.println("PASSED - Caught Expected Exception: " + e.getMessage());
+        }
 
         //System.out.println(run("ScriptsInfiniteMemory", 100000, Long.MAX_VALUE));
-        System.out.println(run("InfiniteCatch", 50000, 50000));
+//        System.out.println(run("InfiniteCatch", 50000, 50000));
 
     }
 
