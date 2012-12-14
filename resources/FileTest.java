@@ -8,30 +8,36 @@ import java.util.jar.Attributes;
 
 import sandbox.runtime.Account;
 
+/*
+* Unit test to test file access control by SecurityManager. The policy file
+* should allow good_file.txt to be created, but not bad_file.txt
+*/
+
 public class FileTest {
     public static String main() {
 
-        File f;
-        f = new File("good_file.txt");
+        File good_file;
+        good_file = new File("good_file.txt");
         try {
-            f.createNewFile();
-//            System.out.println("Correctly created good_file.txt");
+            good_file.createNewFile();
+            System.out.println("Correctly created good_file.txt");
         } catch (IOException e) {
             System.err.println("IOException: ");
             System.err.println(e);
         } catch (SecurityException e) {
-//            System.err.println("Hmm should have been able to write to good_file.txt, but could not");
+            System.out.println("Hmm should have been able to write to good_file.txt, but could not");
         }
 
-        f = new File("bad_file.txt");
+        File bad_file;
+	bad_file = new File("bad_file.txt");
         try {
-            f.createNewFile();
-//            System.out.println("Oh noes! Created bad_file.txt but shouldn't have!");
+            bad_file.createNewFile();
+            System.out.println("Oh noes! Created bad_file.txt but shouldn't have!");
         } catch (IOException e) {
             System.err.println("IOException: ");
             System.err.println(e);
         } catch (SecurityException e) {
-//            System.err.println("Good! Blocked creation of bad_file.txt");
+            System.out.println("Good! Blocked creation of bad_file.txt");
         }
 
         return "FileTest complete";

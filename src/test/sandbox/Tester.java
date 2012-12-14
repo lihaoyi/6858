@@ -47,11 +47,15 @@ public class Tester {
         prepareFile("ScriptsInfiniteMemory");
         prepareFile("InfiniteCatch");
         prepareFile("FileTest");
+	prepareFile("SocketTest");
+	prepareFile("ScriptsGood");
 
         System.setProperty("java.security.policy", "resources/Test.policy");
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }
+	System.out.println(run("ScriptsGood", 100000000, 100000000));
+	System.out.println(run("SocketTest", 100000, 10000000));
         System.out.println(run("FileTest", 100000, 1000000));
         System.out.println(run("InfiniteLoop", 50000, 50000));
         System.out.println(run("InfiniteMemory", 100000, 100000));
