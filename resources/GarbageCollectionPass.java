@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.Attributes;
 import java.util.LinkedList;
+
 import sandbox.runtime.Account;
 
 /**
@@ -15,10 +16,10 @@ import sandbox.runtime.Account;
  */
 public class GarbageCollectionPass {
     public static String main() {
-      LinkedList<Object> list = new LinkedList<Object>();
-      for (int i = 0; i < 1000000; i++) {
-        list = new LinkedList<Object>();
-      }
-      return "PASS";
+        LinkedList<Object> list = new LinkedList<Object>();
+        for (int i = 0; i < 1000000; i++) {
+            list = new LinkedList<Object>();
+        }
+        return "PASS";
     }
 }

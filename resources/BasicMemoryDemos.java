@@ -28,7 +28,7 @@ public class BasicMemoryDemos {
         // Test reflection based allocation
         java.lang.reflect.Array.newInstance(Object.class, 10);
         resetIncrement(); // Reset, due to class loading.
- 
+
         java.lang.reflect.Array.newInstance(Object.class, 10);
         checkIncrement(10 * 8); // sizeof(T_REF) is estimated as 8.
 

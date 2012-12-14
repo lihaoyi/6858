@@ -17,11 +17,11 @@ public class ScriptsInfiniteLoop {
 
         String script =
                 "(function(){" +
-                    "var x = 2; " +
-                    "while (true) {" +
-                      "x = x + 1" +
-                    "}" +
-                "})()";
+                        "var x = 2; " +
+                        "while (true) {" +
+                        "x = x + 1" +
+                        "}" +
+                        "})()";
         engine.eval(script);
         return "Oh No!";
     }

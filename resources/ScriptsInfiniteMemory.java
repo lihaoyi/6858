@@ -16,11 +16,11 @@ public class ScriptsInfiniteMemory {
 
         String script =
                 "(function(){" +
-                    "var x = []; " +
-                    "while(x > 0){" +
-                      "x.push(x.length)" + //  "y.push(1);}; return cow + moo" +
-                    "}" +
-                "})()";
+                        "var x = []; " +
+                        "while(x > 0){" +
+                        "x.push(x.length)" + //  "y.push(1);}; return cow + moo" +
+                        "}" +
+                        "})()";
 
         engine.eval(script);
 

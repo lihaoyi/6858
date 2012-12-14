@@ -38,7 +38,7 @@ public class SocketTest {
             socket = new Socket("fake_bad_address", 4444);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-	    System.out.println("Socket connected correctly to fake_bad_address...wrong!");
+            System.out.println("Socket connected correctly to fake_bad_address...wrong!");
 
             out.close();
             in.close();

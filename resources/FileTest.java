@@ -29,7 +29,7 @@ public class FileTest {
         }
 
         File bad_file;
-	bad_file = new File("bad_file.txt");
+        bad_file = new File("bad_file.txt");
         try {
             bad_file.createNewFile();
             System.out.println("Oh noes! Created bad_file.txt but shouldn't have!");

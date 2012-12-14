@@ -15,12 +15,12 @@ public class ScriptsGood {
 
         String script =
                 "(function(){" +
-                    "var x = 2; " +
-                    "while (x < 3) {" +
-                      "x = x + 1" +
-                    "}" +
-                    "return x" +
-                "})()";
+                        "var x = 2; " +
+                        "while (x < 3) {" +
+                        "x = x + 1" +
+                        "}" +
+                        "return x" +
+                        "})()";
 
         return "Benign code PASS, returns " + engine.eval(script);
     }

@@ -16,12 +16,12 @@ import sandbox.runtime.Account;
  */
 public class GarbageCollectionFail {
     public static String main() {
-      LinkedList<Object> list = new LinkedList<Object>();
-      for (int i = 0; i < 1000000; i++) {
-        LinkedList<Object> prev = list;
-        list = new LinkedList<Object>();
-        list.add(prev);
-      }
-      return "FAIL - Expected ResourceLimitException to be thrown.";
+        LinkedList<Object> list = new LinkedList<Object>();
+        for (int i = 0; i < 1000000; i++) {
+            LinkedList<Object> prev = list;
+            list = new LinkedList<Object>();
+            list.add(prev);
+        }
+        return "FAIL - Expected ResourceLimitException to be thrown.";
     }
 }
