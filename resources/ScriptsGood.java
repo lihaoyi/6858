@@ -22,6 +22,6 @@ public class ScriptsGood {
                     "return x" +
                 "})()";
 
-        return "ScriptsGood returns correctly! " + engine.eval(script);
+        return "Benign code PASS, returns " + engine.eval(script);
     }
 }
