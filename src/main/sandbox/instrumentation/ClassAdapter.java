@@ -54,7 +54,6 @@ public class ClassAdapter extends org.objectweb.asm.ClassVisitor {
         if (!fieldCountMap.containsKey(this.name)) {
             fieldCountMap.put(this.name, 0);
         }
-        // TODO(TFK): Take into account type of field, if necessary.
         fieldCountMap.put(this.name, fieldCountMap.get(this.name) + 1);
         return super.visitField(access, name, desc, signature, value);
     }

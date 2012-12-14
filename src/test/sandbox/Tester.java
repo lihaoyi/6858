@@ -41,6 +41,7 @@ public class Tester {
 
     public static void main(String[] args) throws Exception {
         prepareFile("InfiniteLoop");
+        prepareFile("BasicMemoryDemos");
         prepareFile("InfiniteMemory");
         prepareFile("BigInstructionBlock");
         prepareFile("ScriptsInfiniteLoop");
@@ -56,6 +57,13 @@ public class Tester {
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }
+	System.out.println(run("BasicMemoryDemos", 100000000, 100000000));
+        System.out.println(run("GarbageCollectionPass", 1000000, Long.MAX_VALUE));
+        try {
+          System.out.println(run("GarbageCollectionFail", 1000000, Long.MAX_VALUE));
+        } catch (Exception e) {
+          System.out.println("PASSED - Expected exception caught.");
+        }
 	System.out.println(run("ScriptsGood", 100000000, 100000000));
 	System.out.println(run("SocketTest", 100000, 10000000));
         System.out.println(run("FileTest", 100000, 1000000));
@@ -63,14 +71,6 @@ public class Tester {
         System.out.println(run("InfiniteMemory", 100000, 100000));
         System.out.println(run("BigInstructionBlock", 50000, 10000));
         System.out.println(run("ScriptsInfiniteLoop", Long.MAX_VALUE, 100000));
-        System.out.println(run("GarbageCollectionPass", 1000000, Long.MAX_VALUE));
-        try {
-          // We expect this to fail with a ResourceLimitException
-          System.out.println(run("GarbageCollectionFail", 1000000, Long.MAX_VALUE));
-          System.out.println("FAILED - Expected ResourceLimitException");
-        } catch (Exception e) {
-          System.out.println("PASSED - Caught Expected Exception: " + e.getMessage());
-        }
 
         //System.out.println(run("ScriptsInfiniteMemory", 100000, Long.MAX_VALUE));
 //        System.out.println(run("InfiniteCatch", 50000, 50000));

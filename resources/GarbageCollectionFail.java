@@ -22,6 +22,6 @@ public class GarbageCollectionFail {
         list = new LinkedList<Object>();
         list.add(prev);
       }
-      return "PASS";
+      return "FAIL - Expected ResourceLimitException to be thrown.";
     }
 }
