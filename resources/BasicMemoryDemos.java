@@ -41,6 +41,13 @@ public class BasicMemoryDemos {
         String s = new String(); // String has 7 fields.
         checkIncrement(7 * 8);
 
+        // Test Object.clone()
+        long[] sheep = new long[100];
+        checkIncrement(100 * 8);
+
+        long[] dolly = sheep.clone();
+        checkIncrement(100 * 8);
+
         if (output == null) return "Success! Nothing broke";
         else return output;
     }
