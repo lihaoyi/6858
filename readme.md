@@ -1,4 +1,4 @@
-The World's Most Advaned Sandbox™
+The World's Most Advanced Sandbox™
 =================================
 
 *The World’s Most Advanced Sandbox™* (TWMAS) is a portable sandbox designed to safely run untrusted Java bytecode. Unlike traditional sandboxes, many of which use non-portable operating system (OS) facilities to run the untrusted code in a separate process with restricted privileges, TWMAS does not make use of the OS. Rather, it provides a way for a host Java Virtual Machine (JVM) to execute untrusted code directly, using the Java SecurityManager to block access to dangerous capabilities (Filesystem, Network, System, etc.) and instruction-rewriting in order to bound the number of bytes of memory allocated and the number of instruction executed.
